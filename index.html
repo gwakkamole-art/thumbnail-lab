@@ -4,137 +4,197 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="유튜브 썸네일 클릭률 테스트 시뮬레이터">
-    <title>유튜브 썸네일 연구소</title> <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <title>유튜브 썸네일 연구소 (Compact)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* --- 기본 스타일 --- */
-        body { margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; background-color: #f0f2f5; color: #333; overflow: hidden; }
-        .app-container { display: flex; height: 100vh; }
+        /* --- ✨ 디자인 테마 변수 --- */
+        :root {
+            --main-blue: #2E4CB2;
+            --light-blue: #5183F0;
+            --bg-gradient-start: #F0F5FF;
+            --bg-gradient-end: #DDE9FF;
+            --point-yellow: #FFF6B0;
+            --text-dark: #2C3E50;
+            --card-shadow: 0 10px 20px rgba(46, 76, 178, 0.08); /* 그림자도 살짝 줄임 */
+        }
+
+        /* --- 기본 스타일 (폰트 사이즈 조정) --- */
+        body { 
+            margin: 0; padding: 0; 
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; 
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            color: var(--text-dark); 
+            overflow: hidden; 
+            font-size: 14px; /* 전체 폰트 크기 축소 */
+        }
+        .app-container { display: flex; height: 100vh; padding: 15px; box-sizing: border-box; gap: 15px; }
         
-        /* 왼쪽 패널 */
+        /* --- 왼쪽 패널 (슬림 버전) --- */
         .control-panel { 
-            width: 360px; background: #ffffff; padding: 25px; border-right: 1px solid #e0e0e0; 
-            box-shadow: 4px 0 15px rgba(0,0,0,0.05); z-index: 100; overflow-y: auto; flex-shrink: 0;
+            width: 300px; /* 380px -> 300px 로 축소 */
+            background: #ffffff; 
+            padding: 20px; /* 패딩 축소 */
+            border-radius: 20px; 
+            box-shadow: var(--card-shadow); 
+            z-index: 100; overflow-y: auto; flex-shrink: 0;
         }
-        /* 상단 제목 스타일 변경 */
         .control-panel h2 { 
-            font-size: 1.4rem; border-bottom: 2px solid #333; padding-bottom: 15px; margin-top: 0; color: #111; 
-            letter-spacing: -1px; font-weight: 800;
+            font-size: 1.3rem; margin-top: 0; color: var(--main-blue); 
+            letter-spacing: -0.5px; font-weight: 800;
+            display: inline-block;
+            background: linear-gradient(to top, var(--point-yellow) 40%, transparent 40%);
         }
-        .group { background: #f9fafb; border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .group-title { font-size: 0.9rem; font-weight: bold; color: #ff3b3b; margin-bottom: 10px; display: block; }
+        /* 그룹 박스 */
+        .group { 
+            background: #fff; 
+            border: 2px solid #E8F0FE; 
+            padding: 15px; /* 패딩 축소 */
+            border-radius: 12px; margin-bottom: 15px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+        }
+        .group-title { 
+            font-size: 0.9rem; font-weight: bold; color: var(--main-blue); 
+            margin-bottom: 10px; display: flex; align-items: center; gap: 5px;
+        }
         
-        input[type="file"], input[type="text"] { width: 100%; padding: 8px; background: #fff; border: 1px solid #ddd; margin-bottom: 8px; box-sizing: border-box; }
-        input[type="range"] { width: 100%; cursor: pointer; margin: 10px 0; display: block; }
-        label { font-size: 0.8rem; color: #666; font-weight: 500; display: flex; justify-content: space-between; }
+        /* 입력 컨트롤 */
+        input[type="file"], input[type="text"] { 
+            width: 100%; padding: 8px; /* 패딩 축소 */
+            background: #F8FBFF; border: 1px solid #D0E2FF; 
+            border-radius: 8px; margin-bottom: 8px; 
+            box-sizing: border-box; font-family: inherit; color: var(--main-blue);
+            outline: none; transition: all 0.2s; font-size: 0.85rem;
+        }
+        input[type="file"]::file-selector-button {
+            background: var(--light-blue); color: white; border: none; 
+            padding: 6px 10px; border-radius: 6px; cursor: pointer; margin-right: 8px; font-weight: bold; font-size: 0.8rem;
+        }
+        input[type="file"]:hover, input[type="text"]:focus { border-color: var(--main-blue); background: #fff; }
+
+        input[type="range"] { 
+            width: 100%; cursor: pointer; margin: 10px 0; display: block; 
+            accent-color: var(--main-blue);
+        }
+        label { font-size: 0.8rem; color: #6E7F91; font-weight: 600; display: flex; justify-content: space-between; }
         
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; color: white; transition: 0.2s; }
-        .btn-danger { background: #ff3b3b; } .btn-danger:hover { background: #ff6b6b; }
-        .btn-success { background: #00c853; } .btn-success:hover { background: #00e676; }
-        .btn-blue { background: #3ea6ff; } .btn-blue:hover { background: #65b8ff; }
+        /* 버튼 */
+        .btn { 
+            width: 100%; padding: 12px; border: none; border-radius: 10px; 
+            font-weight: bold; cursor: pointer; transition: all 0.2s; margin-top: 5px; font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+        .btn-blue { background: linear-gradient(135deg, var(--light-blue), var(--main-blue)); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #FF6B6B, #FF3B3B); color: white; }
 
-        /* 오른쪽 작업 공간 */
-        .workspace { flex: 1; background-color: #e9ecef; display: flex; justify-content: center; align-items: center; padding: 20px; overflow: auto; }
+        /* --- 오른쪽 작업 공간 --- */
+        .workspace { 
+            flex: 1; 
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 20px; border: 2px solid #fff;
+            box-shadow: var(--card-shadow);
+            display: flex; justify-content: center; align-items: center; padding: 20px; overflow: auto; 
+        }
 
-        /* --- 듀얼 스테이지 --- */
+        /* --- 듀얼 스테이지 (사이즈 축소) --- */
         #dualStage {
-            position: relative;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding: 50px;
-            min-width: 1200px; 
-            min-height: 800px;
+            position: relative; display: flex; align-items: flex-end; justify-content: center;
+            padding: 30px; 
+            /* 최소 크기도 줄임 */
+            min-width: 900px; min-height: 600px;
         }
 
-        /* PC 스타일 */
-        .pc-wrapper { position: relative; z-index: 10; margin-right: -40px; }
+        /* --- PC 프레임 (80% 축소) --- */
+        .pc-wrapper { position: relative; z-index: 10; margin-right: -30px; /* 겹침 간격 조정 */ }
         .pc-frame {
             background: #222; border-radius: 12px 12px 0 0; padding: 12px 12px 0 12px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 2px solid #ddd; border-bottom: none;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 3px solid #333; border-bottom: none;
         }
-        .pc-screen { width: 800px; height: 500px; background: #fff; position: relative; overflow: hidden; }
-        .pc-chin { height: 40px; background: #1a1a1a; border-radius: 0 0 12px 12px; display: flex; justify-content: center; align-items: center; }
-        .pc-chin::after { content: ''; width: 5px; height: 5px; background: #fff; border-radius: 50%; opacity: 0.5; }
-        .pc-stand { width: 160px; height: 50px; background: linear-gradient(#333, #111); margin: 0 auto; border-radius: 0 0 10px 10px; }
+        /* 화면 크기: 800x500 -> 640x400 */
+        .pc-screen { width: 640px; height: 400px; background: #fff; position: relative; overflow: hidden; border-radius: 4px; }
+        .pc-chin { height: 35px; background: #1a1a1a; border-radius: 0 0 12px 12px; display: flex; justify-content: center; align-items: center; }
+        .pc-chin::after { content: ''; width: 5px; height: 5px; background: #fff; border-radius: 50%; opacity: 0.6; box-shadow: 0 0 4px #fff; }
+        .pc-stand { width: 140px; height: 45px; background: linear-gradient(#333, #111); margin: 0 auto; border-radius: 0 0 10px 10px; }
 
-        /* 모바일 스타일 */
-        .phone-wrapper { position: relative; z-index: 20; margin-bottom: -10px; }
+        /* --- 모바일 프레임 (80% 축소) --- */
+        .phone-wrapper { position: relative; z-index: 20; margin-bottom: -5px; }
         .phone-frame {
-            background: #111; border-radius: 40px; padding: 10px;
-            box-shadow: -10px 20px 40px rgba(0,0,0,0.4); border: 3px solid #444;
+            background: #111; border-radius: 36px; padding: 10px;
+            box-shadow: -15px 20px 40px rgba(0,0,0,0.5); border: 3px solid #444;
         }
-        .phone-screen { width: 320px; height: 640px; background: #fff; border-radius: 30px; position: relative; overflow: hidden; }
-        .phone-notch { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); width: 80px; height: 20px; background: #000; border-radius: 10px; z-index: 100; pointer-events: none; }
+        /* 화면 크기: 320x640 -> 256x512 */
+        .phone-screen { width: 256px; height: 512px; background: #fff; border-radius: 28px; position: relative; overflow: hidden; }
+        .phone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 70px; height: 20px; background: #000; border-radius: 10px; z-index: 100; pointer-events: none; }
 
-        /* 공통 */
+        /* 공통 요소 */
         .bg-img { position: absolute; top: 0; left: 0; width: 100%; display: none; pointer-events: none; }
-        .placeholder { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ccc; font-weight: bold; pointer-events: none; text-align: center; width: 100%; line-height: 1.5; }
+        .placeholder { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            color: #A0B0C0; font-weight: bold; pointer-events: none; text-align: center; width: 100%; line-height: 1.6; font-size: 0.9rem;
+        }
 
-        /* 드래그 요소 스타일 */
+        /* 드래그 요소 */
         .draggable { position: absolute; cursor: grab; z-index: 999; line-height: 0; }
         .draggable:active { cursor: grabbing; }
-        .draggable img { width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .draggable img { width: 100%; border-radius: 10px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); transition: all 0.2s; }
+        .draggable:hover img { box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
 
-        /* 텍스트 요소 스타일 */
+        /* 텍스트 요소 */
         .drag-text { 
             position: absolute; 
-            font-size: 32px; font-weight: bold; color: red; 
-            text-shadow: 2px 2px 0 #fff; 
-            cursor: grab; 
-            z-index: 2000; 
-            white-space: nowrap; 
-            padding: 5px 10px; 
-            border: 2px dashed transparent; 
-            user-select: none;
+            font-size: 24px; /* 폰트도 줄임 */
+            font-weight: bold; color: #FF3B3B; 
+            text-shadow: 2px 2px 0px #fff; 
+            cursor: grab; z-index: 2000; white-space: nowrap; padding: 6px 12px; 
+            border: 2px dashed transparent; border-radius: 10px;
+            user-select: none; transition: all 0.2s;
         }
-        .drag-text:hover { border-color: rgba(255, 0, 0, 0.3); }
-        .drag-text:focus { cursor: text; border-color: #00c853; background: rgba(255,255,255,0.8); outline: none; user-select: text; }
+        .drag-text:hover { border-color: var(--light-blue); background: rgba(255,255,255,0.5); }
+        .drag-text:focus { cursor: text; border-color: var(--main-blue); background: #fff; outline: none; user-select: text; box-shadow: var(--card-shadow); color: var(--text-dark); }
 
         /* 가이드라인 */
-        .editing .draggable { outline: 3px dashed #ff3b3b; }
-        .editing .drag-text { border: 2px dashed #ff3b3b; }
+        .editing .draggable { outline: 2px dashed var(--main-blue); }
+        .editing .drag-text { border: 2px dashed var(--main-blue); }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="control-panel">
-        <h2>🧪 유튜브 썸네일 연구소</h2> <div class="group">
-            <span class="group-title">1. 배경 설정</span>
+        <h2>🧪 유튜브 썸네일 연구소</h2>
+        
+        <div class="group">
+            <span class="group-title">🖼️ 1. 배경 설정</span>
             <label>🖥 PC 배경</label>
             <input type="file" id="pcBgInput" accept="image/*">
             <input type="range" id="pcBgScroll" min="-1000" max="0" value="0">
-            <hr style="margin:10px 0; border:0; border-top:1px solid #eee;">
+            <hr style="margin:10px 0; border:0; border-top:1px dashed #D0E2FF;">
             <label>📱 모바일 배경</label>
             <input type="file" id="moBgInput" accept="image/*">
             <input type="range" id="moBgScroll" min="-1000" max="0" value="0">
         </div>
 
         <div class="group">
-            <span class="group-title">2. 썸네일 설정</span>
-            <label>썸네일 파일</label>
+            <span class="group-title">✨ 2. 썸네일 설정</span>
+            <label>썸네일 파일 (공통)</label>
             <input type="file" id="thumbInput" accept="image/*">
             <label>PC 썸네일 크기</label>
-            <input type="range" id="sizePC" min="100" max="600" value="320">
+            <input type="range" id="sizePC" min="100" max="500" value="280">
             <label>모바일 썸네일 크기</label>
-            <input type="range" id="sizeMO" min="50" max="320" value="280">
+            <input type="range" id="sizeMO" min="50" max="260" value="230">
         </div>
 
         <div class="group">
-            <span class="group-title">3. 텍스트 추가</span>
-            <button class="btn btn-blue" id="addTextBtn">💬 텍스트 추가하기</button>
-            <p style="font-size:12px; color:#555; margin-top:8px; line-height:1.4;">
-                <b>* 사용법:</b><br>
-                1. <b>드래그:</b> 마우스로 잡고 이동<br>
-                2. <b>수정:</b> 더블 클릭 (타자 치기)<br>
-                3. <b>완료:</b> 다른 곳 클릭
+            <span class="group-title">💬 3. 텍스트 추가</span>
+            <button class="btn btn-blue" id="addTextBtn">+ 텍스트 추가하기</button>
+            <p style="font-size:11px; color:#6E7F91; margin-top:10px; line-height:1.4; background:#F0F5FF; padding:8px; border-radius:6px;">
+                <b>💡 팁:</b> 드래그로 이동, 더블 클릭으로 수정하세요.
             </p>
         </div>
 
-        <div class="group">
-            <span class="group-title">4. 저장</span>
+        <div class="group" style="border-color: transparent; background: transparent; box-shadow: none; padding:0;">
             <button class="btn btn-danger" id="toggleGuide">🟥 가이드라인 끄기</button>
-            <button class="btn btn-success" id="saveBtn">📸 화면 저장하기</button>
+            <button class="btn btn-blue" id="saveBtn" style="background: linear-gradient(135deg, #FFC107, #FF9800); color:white;">📸 화면 저장하기</button>
         </div>
     </div>
 
@@ -143,9 +203,9 @@
             <div class="pc-wrapper">
                 <div class="pc-frame">
                     <div class="pc-screen" id="pcScreen">
-                        <div class="placeholder">PC 배경을<br>넣어주세요</div>
+                        <div class="placeholder">PC 배경<br>(640px)</div>
                         <img id="pcBgImg" class="bg-img" src="">
-                        <div id="thumbPC" class="draggable" style="top:50px; left:50px; width:320px;">
+                        <div id="thumbPC" class="draggable" style="top:40px; left:40px; width:280px;">
                             <img id="imgPC" src="" style="display:none;">
                         </div>
                     </div>
@@ -157,9 +217,9 @@
                 <div class="phone-frame">
                     <div class="phone-screen" id="moScreen">
                         <div class="phone-notch"></div>
-                        <div class="placeholder">모바일 배경을<br>넣어주세요</div>
+                        <div class="placeholder">모바일 배경<br>(256px)</div>
                         <img id="moBgImg" class="bg-img" src="">
-                        <div id="thumbMO" class="draggable" style="top:80px; left:20px; width:280px;">
+                        <div id="thumbMO" class="draggable" style="top:60px; left:15px; width:230px;">
                             <img id="imgMO" src="" style="display:none;">
                         </div>
                     </div>
@@ -221,11 +281,11 @@
     document.getElementById('addTextBtn').addEventListener('click', function() {
         const textEl = document.createElement('div');
         textEl.className = 'drag-text';
-        textEl.innerText = '자사';
+        textEl.innerText = '텍스트 (더블클릭)';
         textEl.contentEditable = false;
-        textEl.style.left = '400px'; textEl.style.top = '200px';
-        textEl.addEventListener('dblclick', function() { this.contentEditable = true; this.focus(); this.style.cursor = 'text'; });
-        textEl.addEventListener('blur', function() { this.contentEditable = false; this.style.cursor = 'grab'; });
+        textEl.style.left = '300px'; textEl.style.top = '150px';
+        textEl.addEventListener('dblclick', function() { this.contentEditable = true; this.focus(); });
+        textEl.addEventListener('blur', function() { this.contentEditable = false; });
         document.getElementById('dualStage').appendChild(textEl);
     });
 
@@ -259,14 +319,15 @@
     toggleBtn.addEventListener('click', function() {
         stage.classList.toggle('editing');
         this.innerText = stage.classList.contains('editing') ? "🟥 가이드라인 끄기" : "✅ 촬영 준비 완료";
-        this.className = stage.classList.contains('editing') ? "btn btn-danger" : "btn btn-success";
+        this.className = stage.classList.contains('editing') ? "btn btn-danger" : "btn btn-blue";
+        if(!stage.classList.contains('editing')) this.style.background = "linear-gradient(135deg, #00E676, #00C853)";
     });
     document.getElementById('saveBtn').addEventListener('click', function() {
         const wasEditing = stage.classList.contains('editing');
         if(wasEditing) toggleBtn.click();
         html2canvas(stage, { backgroundColor: null, scale: 2 }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'thumbnail_lab_result.png';
+            link.download = 'thumbnail_lab_compact.png';
             link.href = canvas.toDataURL();
             link.click();
             if(wasEditing) toggleBtn.click();

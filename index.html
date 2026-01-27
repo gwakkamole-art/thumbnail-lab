@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="유튜브 썸네일 클릭률 테스트 시뮬레이터">
-    <title>유튜브 썸네일 연구소 (Compact)</title>
+    <title>유튜브 썸네일 연구소 (Guide Edition)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- ✨ 디자인 테마 변수 --- */
@@ -15,25 +15,25 @@
             --bg-gradient-end: #DDE9FF;
             --point-yellow: #FFF6B0;
             --text-dark: #2C3E50;
-            --card-shadow: 0 10px 20px rgba(46, 76, 178, 0.08); /* 그림자도 살짝 줄임 */
+            --card-shadow: 0 10px 20px rgba(46, 76, 178, 0.08);
         }
 
-        /* --- 기본 스타일 (폰트 사이즈 조정) --- */
+        /* --- 기본 스타일 --- */
         body { 
             margin: 0; padding: 0; 
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; 
             background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
             color: var(--text-dark); 
             overflow: hidden; 
-            font-size: 14px; /* 전체 폰트 크기 축소 */
+            font-size: 14px;
         }
         .app-container { display: flex; height: 100vh; padding: 15px; box-sizing: border-box; gap: 15px; }
         
-        /* --- 왼쪽 패널 (슬림 버전) --- */
+        /* --- 왼쪽 패널 --- */
         .control-panel { 
-            width: 300px; /* 380px -> 300px 로 축소 */
+            width: 300px; 
             background: #ffffff; 
-            padding: 20px; /* 패딩 축소 */
+            padding: 20px; 
             border-radius: 20px; 
             box-shadow: var(--card-shadow); 
             z-index: 100; overflow-y: auto; flex-shrink: 0;
@@ -41,15 +41,24 @@
         .control-panel h2 { 
             font-size: 1.3rem; margin-top: 0; color: var(--main-blue); 
             letter-spacing: -0.5px; font-weight: 800;
-            display: inline-block;
+            display: inline-block; margin-bottom: 10px;
             background: linear-gradient(to top, var(--point-yellow) 40%, transparent 40%);
         }
+        
+        /* [NEW] 사용방법 버튼 스타일 */
+        .guide-btn {
+            display: block; width: 100%; padding: 10px;
+            background: #E8F0FE; color: var(--main-blue);
+            border: 1px dashed var(--main-blue); border-radius: 8px;
+            font-weight: bold; cursor: pointer; margin-bottom: 20px;
+            transition: 0.2s; text-align: center; font-size: 0.9rem;
+        }
+        .guide-btn:hover { background: var(--main-blue); color: white; border-style: solid; }
+
         /* 그룹 박스 */
         .group { 
-            background: #fff; 
-            border: 2px solid #E8F0FE; 
-            padding: 15px; /* 패딩 축소 */
-            border-radius: 12px; margin-bottom: 15px; 
+            background: #fff; border: 2px solid #E8F0FE; 
+            padding: 15px; border-radius: 12px; margin-bottom: 15px; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.02);
         }
         .group-title { 
@@ -59,8 +68,7 @@
         
         /* 입력 컨트롤 */
         input[type="file"], input[type="text"] { 
-            width: 100%; padding: 8px; /* 패딩 축소 */
-            background: #F8FBFF; border: 1px solid #D0E2FF; 
+            width: 100%; padding: 8px; background: #F8FBFF; border: 1px solid #D0E2FF; 
             border-radius: 8px; margin-bottom: 8px; 
             box-sizing: border-box; font-family: inherit; color: var(--main-blue);
             outline: none; transition: all 0.2s; font-size: 0.85rem;
@@ -69,12 +77,7 @@
             background: var(--light-blue); color: white; border: none; 
             padding: 6px 10px; border-radius: 6px; cursor: pointer; margin-right: 8px; font-weight: bold; font-size: 0.8rem;
         }
-        input[type="file"]:hover, input[type="text"]:focus { border-color: var(--main-blue); background: #fff; }
-
-        input[type="range"] { 
-            width: 100%; cursor: pointer; margin: 10px 0; display: block; 
-            accent-color: var(--main-blue);
-        }
+        input[type="range"] { width: 100%; cursor: pointer; margin: 10px 0; display: block; accent-color: var(--main-blue); }
         label { font-size: 0.8rem; color: #6E7F91; font-weight: 600; display: flex; justify-content: space-between; }
         
         /* 버튼 */
@@ -83,78 +86,87 @@
             font-weight: bold; cursor: pointer; transition: all 0.2s; margin-top: 5px; font-size: 0.9rem;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+        .btn:hover { transform: translateY(-2px); }
         .btn-blue { background: linear-gradient(135deg, var(--light-blue), var(--main-blue)); color: white; }
         .btn-danger { background: linear-gradient(135deg, #FF6B6B, #FF3B3B); color: white; }
 
         /* --- 오른쪽 작업 공간 --- */
         .workspace { 
-            flex: 1; 
-            background-color: rgba(255, 255, 255, 0.6);
+            flex: 1; background-color: rgba(255, 255, 255, 0.6);
             border-radius: 20px; border: 2px solid #fff;
             box-shadow: var(--card-shadow);
             display: flex; justify-content: center; align-items: center; padding: 20px; overflow: auto; 
         }
-
-        /* --- 듀얼 스테이지 (사이즈 축소) --- */
         #dualStage {
             position: relative; display: flex; align-items: flex-end; justify-content: center;
-            padding: 30px; 
-            /* 최소 크기도 줄임 */
-            min-width: 900px; min-height: 600px;
+            padding: 30px; min-width: 900px; min-height: 600px;
         }
 
-        /* --- PC 프레임 (80% 축소) --- */
-        .pc-wrapper { position: relative; z-index: 10; margin-right: -30px; /* 겹침 간격 조정 */ }
+        /* --- 프레임 스타일 (Compact) --- */
+        .pc-wrapper { position: relative; z-index: 10; margin-right: -30px; }
         .pc-frame {
             background: #222; border-radius: 12px 12px 0 0; padding: 12px 12px 0 12px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 3px solid #333; border-bottom: none;
         }
-        /* 화면 크기: 800x500 -> 640x400 */
         .pc-screen { width: 640px; height: 400px; background: #fff; position: relative; overflow: hidden; border-radius: 4px; }
         .pc-chin { height: 35px; background: #1a1a1a; border-radius: 0 0 12px 12px; display: flex; justify-content: center; align-items: center; }
         .pc-chin::after { content: ''; width: 5px; height: 5px; background: #fff; border-radius: 50%; opacity: 0.6; box-shadow: 0 0 4px #fff; }
         .pc-stand { width: 140px; height: 45px; background: linear-gradient(#333, #111); margin: 0 auto; border-radius: 0 0 10px 10px; }
 
-        /* --- 모바일 프레임 (80% 축소) --- */
         .phone-wrapper { position: relative; z-index: 20; margin-bottom: -5px; }
         .phone-frame {
             background: #111; border-radius: 36px; padding: 10px;
             box-shadow: -15px 20px 40px rgba(0,0,0,0.5); border: 3px solid #444;
         }
-        /* 화면 크기: 320x640 -> 256x512 */
         .phone-screen { width: 256px; height: 512px; background: #fff; border-radius: 28px; position: relative; overflow: hidden; }
         .phone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 70px; height: 20px; background: #000; border-radius: 10px; z-index: 100; pointer-events: none; }
 
-        /* 공통 요소 */
         .bg-img { position: absolute; top: 0; left: 0; width: 100%; display: none; pointer-events: none; }
         .placeholder { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
             color: #A0B0C0; font-weight: bold; pointer-events: none; text-align: center; width: 100%; line-height: 1.6; font-size: 0.9rem;
         }
 
-        /* 드래그 요소 */
         .draggable { position: absolute; cursor: grab; z-index: 999; line-height: 0; }
         .draggable:active { cursor: grabbing; }
-        .draggable img { width: 100%; border-radius: 10px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); transition: all 0.2s; }
-        .draggable:hover img { box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .draggable img { width: 100%; border-radius: 10px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
 
-        /* 텍스트 요소 */
         .drag-text { 
-            position: absolute; 
-            font-size: 24px; /* 폰트도 줄임 */
-            font-weight: bold; color: #FF3B3B; 
-            text-shadow: 2px 2px 0px #fff; 
-            cursor: grab; z-index: 2000; white-space: nowrap; padding: 6px 12px; 
-            border: 2px dashed transparent; border-radius: 10px;
-            user-select: none; transition: all 0.2s;
+            position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; 
+            text-shadow: 2px 2px 0px #fff; cursor: grab; z-index: 2000; white-space: nowrap; padding: 6px 12px; 
+            border: 2px dashed transparent; border-radius: 10px; user-select: none;
         }
         .drag-text:hover { border-color: var(--light-blue); background: rgba(255,255,255,0.5); }
-        .drag-text:focus { cursor: text; border-color: var(--main-blue); background: #fff; outline: none; user-select: text; box-shadow: var(--card-shadow); color: var(--text-dark); }
+        .drag-text:focus { cursor: text; border-color: var(--main-blue); background: #fff; outline: none; user-select: text; }
 
-        /* 가이드라인 */
         .editing .draggable { outline: 2px dashed var(--main-blue); }
         .editing .drag-text { border: 2px dashed var(--main-blue); }
+
+        /* --- [NEW] 팝업창(모달) 스타일 --- */
+        .modal-overlay {
+            display: none; /* 기본 숨김 */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); z-index: 9999;
+            justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: white; width: 90%; max-width: 500px;
+            padding: 30px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative; animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .modal-header h3 { margin: 0 0 15px 0; color: var(--main-blue); font-size: 1.5rem; }
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 24px; cursor: pointer; color: #aaa; }
+        .close-btn:hover { color: #333; }
+
+        .step-list { list-style: none; padding: 0; margin: 0; }
+        .step-list li { margin-bottom: 15px; padding-left: 10px; border-left: 3px solid var(--light-blue); }
+        .step-title { font-weight: bold; font-size: 1.05rem; display: block; margin-bottom: 4px; color: #333; }
+        .step-desc { font-size: 0.9rem; color: #666; line-height: 1.5; }
+        .modal-footer { margin-top: 25px; text-align: right; }
+        .btn-confirm { background: var(--main-blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
     </style>
 </head>
 <body>
@@ -162,6 +174,8 @@
 <div class="app-container">
     <div class="control-panel">
         <h2>🧪 유튜브 썸네일 연구소</h2>
+        
+        <button class="guide-btn" id="openGuide">📘 사용 방법 (처음이라면 클릭!)</button>
         
         <div class="group">
             <span class="group-title">🖼️ 1. 배경 설정</span>
@@ -229,8 +243,57 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="guideModal">
+    <div class="modal-content">
+        <span class="close-btn" id="closeGuide">&times;</span>
+        <div class="modal-header">
+            <h3>📘 썸네일 연구소 사용 설명서</h3>
+        </div>
+        <ul class="step-list">
+            <li>
+                <span class="step-title">1단계: 배경 준비하기 🖼️</span>
+                <span class="step-desc">유튜브에서 경쟁하고 싶은 화면을 캡처해서 <b>'PC 배경'</b>과 <b>'모바일 배경'</b>에 넣어주세요.</span>
+            </li>
+            <li>
+                <span class="step-title">2단계: 내 썸네일 올리기 ✨</span>
+                <span class="step-desc"><b>'썸네일 파일'</b>을 선택하면 화면에 나타납니다. 마우스로 드래그해서 원하는 영상 위에 올려보세요.</span>
+            </li>
+            <li>
+                <span class="step-title">3단계: 크기 조절하기 📏</span>
+                <span class="step-desc">화면 아래 <b>'크기 조절 슬라이더'</b>를 움직여서 주변 영상들과 크기를 똑같이 맞춰주세요.</span>
+            </li>
+            <li>
+                <span class="step-title">4단계: 텍스트 꾸미기 💬 (선택)</span>
+                <span class="step-desc">제목을 바꾸고 싶다면 <b>'텍스트 추가'</b>를 누르세요. <br>• <b>수정:</b> 글자를 더블 클릭(따닥!) <br>• <b>이동:</b> 마우스로 드래그</span>
+            </li>
+            <li>
+                <span class="step-title">5단계: 저장하기 📸</span>
+                <span class="step-desc">완성되면 <b>'화면 저장하기'</b> 버튼을 누르세요. 멋진 이미지가 다운로드됩니다!</span>
+            </li>
+        </ul>
+        <div class="modal-footer">
+            <button class="btn-confirm" id="okGuide">알겠습니다! 바로 시작하기</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // 이미지 로드 및 스크롤
+    // --- 팝업창 제어 로직 ---
+    const modal = document.getElementById('guideModal');
+    const openBtn = document.getElementById('openGuide');
+    const closeBtn = document.getElementById('closeGuide');
+    const okBtn = document.getElementById('okGuide');
+
+    // 열기
+    openBtn.addEventListener('click', () => modal.style.display = 'flex');
+    // 닫기 (X버튼, 확인버튼, 배경클릭)
+    closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    okBtn.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+
+    // --- 기존 기능 (이미지 로드 등) ---
     function setupImageLoader(inputId, imgId, scrollId) {
         document.getElementById(inputId).addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -260,7 +323,6 @@
     setupImageLoader('pcBgInput', 'pcBgImg', 'pcBgScroll');
     setupImageLoader('moBgInput', 'moBgImg', 'moBgScroll');
 
-    // 썸네일 로드
     document.getElementById('thumbInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if(file) {
@@ -277,7 +339,6 @@
     document.getElementById('sizePC').addEventListener('input', (e) => document.getElementById('thumbPC').style.width = e.target.value + 'px');
     document.getElementById('sizeMO').addEventListener('input', (e) => document.getElementById('thumbMO').style.width = e.target.value + 'px');
 
-    // 텍스트 추가 (수정/드래그 분리)
     document.getElementById('addTextBtn').addEventListener('click', function() {
         const textEl = document.createElement('div');
         textEl.className = 'drag-text';
@@ -289,7 +350,6 @@
         document.getElementById('dualStage').appendChild(textEl);
     });
 
-    // 드래그 기능
     let activeDrag = null;
     let startX, startY, initLeft, initTop;
     document.addEventListener('mousedown', function(e) {
@@ -313,7 +373,6 @@
         document.removeEventListener('mouseup', onMouseUp);
     }
 
-    // 저장 및 가이드라인
     const stage = document.getElementById('dualStage');
     const toggleBtn = document.getElementById('toggleGuide');
     toggleBtn.addEventListener('click', function() {

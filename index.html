@@ -7,7 +7,7 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Auto Edition)</title>
+    <title>유튜브 썸네일 연구소 (Quad-View)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- ✨ 디자인 테마 --- */
@@ -64,10 +64,11 @@
         .phone-screen { width: 256px; height: 512px; background: #fff; border-radius: 28px; position: relative; overflow: hidden; }
         .phone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 70px; height: 20px; background: #000; border-radius: 10px; z-index: 100; pointer-events: none; }
 
-        .bg-img { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; } /* display:none 제거함 (자동로드 위해) */
+        .bg-img { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; }
         
         .draggable { position: absolute; cursor: grab; z-index: 999; line-height: 0; }
         .draggable:active { cursor: grabbing; }
+        /* 유튜브 스타일 곡선 (4px) */
         .draggable img { width: 100%; border-radius: 4px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); transition: width 0.1s; }
 
         .drag-text { position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; text-shadow: 2px 2px 0px #fff; cursor: grab; z-index: 2000; white-space: nowrap; padding: 6px 12px; border: 2px dashed transparent; border-radius: 10px; user-select: none; }
@@ -99,41 +100,45 @@
         
         <div class="group">
             <span class="group-title">🖼️ 1. 배경 설정 (자동)</span>
-            <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
-                * 폴더에 <b>bg-pc.png</b>, <b>bg-mo.png</b> 파일이 있으면 자동 적용됩니다.
-            </p>
-            <label>화면 위치 조절 (스크롤)</label>
+            <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">* <b>bg-pc.png</b>, <b>bg-mo.png</b> 자동 로드</p>
+            <label>위치 조절</label>
             <input type="range" id="pcBgScroll" min="-1000" max="0" value="0" title="PC 스크롤">
             <input type="range" id="moBgScroll" min="-1000" max="0" value="0" title="모바일 스크롤">
         </div>
 
         <div class="group">
-            <span class="group-title">✨ 2. 썸네일 비교 (3개)</span>
+            <span class="group-title">✨ 2. 썸네일 비교 (4개)</span>
             
             <label>썸네일 1 (내 파일)</label>
             <input type="file" id="thumbInput1" accept="image/*">
-            
-            <hr style="margin:10px 0; border:0; border-top:1px dashed #D0E2FF;">
+            <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
 
             <label>썸네일 2 (경쟁사)</label>
             <div class="url-input-group">
-                <input type="text" id="urlInput2" placeholder="유튜브 링크 (Ctrl+V)">
+                <input type="text" id="urlInput2" placeholder="URL 입력">
                 <button class="url-btn" onclick="loadFromUrl(2)">가져오기</button>
             </div>
             <input type="file" id="thumbInput2" accept="image/*">
-
-            <hr style="margin:10px 0; border:0; border-top:1px dashed #D0E2FF;">
+            <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
 
             <label>썸네일 3 (경쟁사)</label>
             <div class="url-input-group">
-                <input type="text" id="urlInput3" placeholder="유튜브 링크 (Ctrl+V)">
+                <input type="text" id="urlInput3" placeholder="URL 입력">
                 <button class="url-btn" onclick="loadFromUrl(3)">가져오기</button>
             </div>
             <input type="file" id="thumbInput3" accept="image/*">
+            <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
+
+            <label>썸네일 4 (경쟁사)</label>
+            <div class="url-input-group">
+                <input type="text" id="urlInput4" placeholder="URL 입력">
+                <button class="url-btn" onclick="loadFromUrl(4)">가져오기</button>
+            </div>
+            <input type="file" id="thumbInput4" accept="image/*">
 
             <hr style="margin:15px 0; border:0; border-top:1px dashed #D0E2FF;">
             
-            <label>크기 조절 (PC/모바일 동시)</label>
+            <label>크기 조절 (전체)</label>
             <input type="range" id="sizePC" min="100" max="500" value="280">
             <input type="range" id="sizeMO" min="50" max="260" value="230">
         </div>
@@ -145,7 +150,7 @@
 
         <div class="group" style="border-color: transparent; background: transparent; box-shadow: none; padding:0;">
             <button class="btn btn-danger" id="toggleGuide">🟥 가이드라인 끄기</button>
-            <button class="btn btn-blue" id="saveBtn" style="background: linear-gradient(135deg, #FFC107, #FF9800); color:white;">📸 화면 저장하기 (1200px)</button>
+            <button class="btn btn-blue" id="saveBtn" style="background: linear-gradient(135deg, #FFC107, #FF9800); color:white;">📸 화면 저장하기</button>
         </div>
     </div>
 
@@ -155,7 +160,7 @@
                 <div class="pc-frame">
                     <div class="pc-screen" id="pcScreen">
                         <img id="pcBgImg" class="bg-img" src="bg-pc.png" onerror="this.style.display='none'; document.getElementById('pcPlace').style.display='block';">
-                        <div id="pcPlace" class="placeholder" style="display:none;">bg-pc.png 파일을<br>폴더에 넣어주세요</div>
+                        <div id="pcPlace" class="placeholder" style="display:none;">bg-pc.png 없음</div>
                         
                         <div id="thumbPC1" class="draggable" style="top:50px; left:180px; width:280px;">
                             <img id="imgPC1" src="" style="display:none;" crossorigin="anonymous">
@@ -165,6 +170,9 @@
                         </div>
                         <div id="thumbPC3" class="draggable" style="top:190px; left:180px; width:280px;">
                             <img id="imgPC3" src="" style="display:none;" crossorigin="anonymous">
+                        </div>
+                        <div id="thumbPC4" class="draggable" style="top:260px; left:180px; width:280px;">
+                            <img id="imgPC4" src="" style="display:none;" crossorigin="anonymous">
                         </div>
                     </div>
                     <div class="pc-chin"></div>
@@ -176,7 +184,7 @@
                     <div class="phone-screen" id="moScreen">
                         <div class="phone-notch"></div>
                         <img id="moBgImg" class="bg-img" src="bg-mo.png" onerror="this.style.display='none'; document.getElementById('moPlace').style.display='block';">
-                        <div id="moPlace" class="placeholder" style="display:none;">bg-mo.png 파일을<br>폴더에 넣어주세요</div>
+                        <div id="moPlace" class="placeholder" style="display:none;">bg-mo.png 없음</div>
                         
                         <div id="thumbMO1" class="draggable" style="top:80px; left:13px; width:230px;">
                             <img id="imgMO1" src="" style="display:none;" crossorigin="anonymous">
@@ -186,6 +194,9 @@
                         </div>
                         <div id="thumbMO3" class="draggable" style="top:220px; left:13px; width:230px;">
                             <img id="imgMO3" src="" style="display:none;" crossorigin="anonymous">
+                        </div>
+                        <div id="thumbMO4" class="draggable" style="top:290px; left:13px; width:230px;">
+                            <img id="imgMO4" src="" style="display:none;" crossorigin="anonymous">
                         </div>
                     </div>
                 </div>
@@ -197,26 +208,14 @@
 <div class="modal-overlay" id="guideModal">
     <div class="modal-content">
         <span class="close-btn" id="closeGuide">&times;</span>
-        <h3>📘 썸네일 연구소 사용 설명서</h3>
+        <h3>📘 사용 설명서</h3>
         <ul class="step-list">
-            <li>
-                <span class="step-title">배경 자동 설정 🖼️</span>
-                <span class="step-desc">폴더에 <b>bg-pc.png</b>와 <b>bg-mo.png</b>를 넣어두면 자동으로 배경이 뜹니다! (매번 업로드 X)</span>
-            </li>
-            <li>
-                <span class="step-title">URL로 썸네일 가져오기 🔗</span>
-                <span class="step-desc">유튜브 영상 링크를 복사해서 붙여넣고 <b>[가져오기]</b>를 누르면 경쟁사 썸네일이 바로 뜹니다.</span>
-            </li>
-            <li>
-                <span class="step-title">배치 및 비교 ✨</span>
-                <span class="step-desc">썸네일을 드래그해서 위치를 잡고, 슬라이더로 크기를 조절해 비교해보세요.</span>
-            </li>
-            <li>
-                <span class="step-title">고화질 저장 📸</span>
-                <span class="step-desc"><b>'화면 저장하기'</b>를 누르면 1200px 고해상도로 깔끔하게 저장됩니다.</span>
-            </li>
+            <li><span class="step-title">배경 자동 로드 🖼️</span><span class="step-desc"><b>bg-pc.png</b>, <b>bg-mo.png</b> 파일을 폴더에 넣어주세요.</span></li>
+            <li><span class="step-title">썸네일 4개 비교 ✨</span><span class="step-desc">파일을 선택하거나 유튜브 URL을 넣어 <b>[가져오기]</b>를 누르세요.</span></li>
+            <li><span class="step-title">배치 및 조절 📏</span><span class="step-desc">드래그해서 순서를 바꾸고, 슬라이더로 크기를 맞추세요.</span></li>
+            <li><span class="step-title">고화질 저장 📸</span><span class="step-desc"><b>[화면 저장하기]</b>를 누르면 1200px 고해상도로 저장됩니다.</span></li>
         </ul>
-        <p class="creator-info">모든 문의사항은 사이트 제작자 <b>[곽민지]</b>에게 부탁드립니다. 🙇‍♀️</p>
+        <p class="creator-info">문의: 사이트 제작자 <b>[곽민지]</b> 🙇‍♀️</p>
         <button class="btn-confirm" id="okGuide">확인</button>
     </div>
 </div>
@@ -231,35 +230,31 @@
     closeBtn.addEventListener('click', () => modal.style.display = 'none');
     okBtn.addEventListener('click', () => modal.style.display = 'none');
 
-    // 스크롤 (배경 이미지는 자동 로드되므로 스크롤만 연결)
+    // 스크롤
     document.getElementById('pcBgScroll').addEventListener('input', (e) => document.getElementById('pcBgImg').style.top = e.target.value + 'px');
     document.getElementById('moBgScroll').addEventListener('input', (e) => document.getElementById('moBgImg').style.top = e.target.value + 'px');
 
-    // [NEW] URL에서 썸네일 추출 로직
+    // URL 로드
     function getYoutubeId(url) {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
         return (match && match[2].length === 11) ? match[2] : null;
     }
-
     function loadFromUrl(num) {
         const url = document.getElementById(`urlInput${num}`).value;
         const videoId = getYoutubeId(url);
-        
         if (videoId) {
             const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-            // PC & Mobile 이미지 소스 업데이트
             const pcImg = document.getElementById(`imgPC${num}`);
             const moImg = document.getElementById(`imgMO${num}`);
-            
             pcImg.src = thumbUrl; pcImg.style.display = 'block';
             moImg.src = thumbUrl; moImg.style.display = 'block';
         } else {
-            alert("올바른 유튜브 주소가 아닙니다! (예: https://youtu.be/...)");
+            alert("올바른 유튜브 주소가 아닙니다!");
         }
     }
 
-    // 파일 업로드 로직 (기존 유지)
+    // 파일 로드
     function setupThumbLoader(inputId, pcImgId, moImgId) {
         document.getElementById(inputId).addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -278,19 +273,16 @@
     setupThumbLoader('thumbInput1', 'imgPC1', 'imgMO1');
     setupThumbLoader('thumbInput2', 'imgPC2', 'imgMO2');
     setupThumbLoader('thumbInput3', 'imgPC3', 'imgMO3');
+    setupThumbLoader('thumbInput4', 'imgPC4', 'imgMO4');
 
-    // 크기 조절
+    // 크기 조절 (4개 동시)
     document.getElementById('sizePC').addEventListener('input', (e) => {
         const val = e.target.value + 'px';
-        document.getElementById('thumbPC1').style.width = val;
-        document.getElementById('thumbPC2').style.width = val;
-        document.getElementById('thumbPC3').style.width = val;
+        for(let i=1; i<=4; i++) document.getElementById(`thumbPC${i}`).style.width = val;
     });
     document.getElementById('sizeMO').addEventListener('input', (e) => {
         const val = e.target.value + 'px';
-        document.getElementById('thumbMO1').style.width = val;
-        document.getElementById('thumbMO2').style.width = val;
-        document.getElementById('thumbMO3').style.width = val;
+        for(let i=1; i<=4; i++) document.getElementById(`thumbMO${i}`).style.width = val;
     });
 
     // 텍스트 추가
@@ -329,7 +321,7 @@
         document.removeEventListener('mouseup', onMouseUp);
     }
 
-    // 저장
+    // 저장 (CORS 옵션 포함)
     const stage = document.getElementById('dualStage');
     const toggleBtn = document.getElementById('toggleGuide');
     toggleBtn.addEventListener('click', function() {
@@ -338,19 +330,19 @@
         this.className = stage.classList.contains('editing') ? "btn btn-danger" : "btn btn-blue";
         if(!stage.classList.contains('editing')) this.style.background = "linear-gradient(135deg, #00E676, #00C853)";
     });
+
     document.getElementById('saveBtn').addEventListener('click', function() {
         const wasEditing = stage.classList.contains('editing');
         if(wasEditing) toggleBtn.click();
         const scaleFactor = 1200 / stage.offsetHeight;
         
-        // CORS 문제 방지를 위해 useCORS 옵션 추가
         html2canvas(stage, { 
             backgroundColor: null, 
             scale: scaleFactor,
             useCORS: true 
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'thumbnail_lab_1200px.png';
+            link.download = 'thumbnail_lab_4view.png';
             link.href = canvas.toDataURL();
             link.click();
             if(wasEditing) toggleBtn.click();

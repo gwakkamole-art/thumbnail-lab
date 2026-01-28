@@ -54,14 +54,15 @@
         .url-btn { background: var(--light-blue); color: white; border: none; border-radius: 6px; padding: 0 10px; height: 34px; cursor: pointer; font-weight: bold; font-size: 0.8rem; white-space: nowrap; }
         .url-btn:hover { background: var(--main-blue); }
 
-        /* [수정] 쓰레기통 버튼: 메인 컬러(파랑)로 통일 */
+        /* 쓰레기통 버튼 */
         .trash-btn { 
-            background: linear-gradient(135deg, var(--light-blue), var(--main-blue));
+            background: linear-gradient(135deg, #FFC107, #FF9800); 
             color: white; border: none; border-radius: 6px; padding: 0 8px; height: 34px; 
-            cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; 
             transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .trash-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .trash-btn:hover { background: linear-gradient(135deg, #FFB300, #F57C00); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .trash-btn svg { width: 18px; height: 18px; stroke-width: 2; }
 
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn:hover { transform: translateY(-2px); }
@@ -80,7 +81,9 @@
         .pc-chin::after { content: ''; width: 5px; height: 5px; background: #fff; border-radius: 50%; opacity: 0.6; box-shadow: 0 0 4px #fff; }
         .pc-stand { width: 140px; height: 45px; background: linear-gradient(#333, #111); margin: 0 auto; border-radius: 0 0 10px 10px; }
 
-        .phone-wrapper { position: relative; z-index: 20; margin-bottom: -5px; }
+        /* [수정] 모바일 프레임 왼쪽으로 100px 이동 */
+        .phone-wrapper { position: relative; z-index: 20; margin-bottom: -5px; margin-left: -100px; }
+        
         .phone-frame { background: #111; border-radius: 36px; padding: 10px; box-shadow: -15px 20px 40px rgba(0,0,0,0.5); border: 3px solid #444; }
         .phone-screen { width: 256px; height: 512px; background: #fff; border-radius: 28px; position: relative; overflow: hidden; }
         .phone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 70px; height: 20px; background: #000; border-radius: 10px; z-index: 100; pointer-events: none; }
@@ -138,7 +141,9 @@
             <label>1번 위치 (맨 위)</label>
             <div class="url-input-group">
                 <input type="file" id="thumbInput1" accept="image/*">
-                <button class="trash-btn" onclick="clearThumb(1)" title="삭제">🗑️</button>
+                <button class="trash-btn" onclick="clearThumb(1)" title="삭제">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
             </div>
             
             <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
@@ -147,7 +152,9 @@
             <div class="url-input-group">
                 <input type="text" id="urlInput2" placeholder="URL 입력">
                 <button class="url-btn" onclick="loadFromUrl(2)">가져오기</button>
-                <button class="trash-btn" onclick="clearThumb(2)" title="삭제">🗑️</button>
+                <button class="trash-btn" onclick="clearThumb(2)" title="삭제">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
             </div>
             <input type="file" id="thumbInput2" accept="image/*">
             
@@ -157,7 +164,9 @@
             <div class="url-input-group">
                 <input type="text" id="urlInput3" placeholder="URL 입력">
                 <button class="url-btn" onclick="loadFromUrl(3)">가져오기</button>
-                <button class="trash-btn" onclick="clearThumb(3)" title="삭제">🗑️</button>
+                <button class="trash-btn" onclick="clearThumb(3)" title="삭제">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
             </div>
             <input type="file" id="thumbInput3" accept="image/*">
             
@@ -167,7 +176,9 @@
             <div class="url-input-group">
                 <input type="text" id="urlInput4" placeholder="URL 입력">
                 <button class="url-btn" onclick="loadFromUrl(4)">가져오기</button>
-                <button class="trash-btn" onclick="clearThumb(4)" title="삭제">🗑️</button>
+                <button class="trash-btn" onclick="clearThumb(4)" title="삭제">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
             </div>
             <input type="file" id="thumbInput4" accept="image/*">
         </div>

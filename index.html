@@ -7,163 +7,87 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Studio Edition)</title>
+    <title>유튜브 썸네일 연구소 (Auto Edition)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* --- ✨ 디자인 테마 변수 --- */
+        /* --- ✨ 디자인 테마 --- */
         :root {
-            --main-blue: #2E4CB2;
-            --light-blue: #5183F0;
-            --bg-gradient-start: #F0F5FF;
-            --bg-gradient-end: #DDE9FF;
-            --point-yellow: #FFF6B0;
-            --text-dark: #2C3E50;
+            --main-blue: #2E4CB2; --light-blue: #5183F0;
+            --bg-gradient-start: #F0F5FF; --bg-gradient-end: #DDE9FF;
+            --point-yellow: #FFF6B0; --text-dark: #2C3E50;
             --card-shadow: 0 10px 20px rgba(46, 76, 178, 0.08);
         }
 
-        /* --- 기본 스타일 --- */
-        body { 
-            margin: 0; padding: 0; 
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; 
-            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-            color: var(--text-dark); 
-            overflow: hidden; 
-            font-size: 14px;
-        }
+        body { margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end)); color: var(--text-dark); overflow: hidden; font-size: 14px; }
         .app-container { display: flex; height: 100vh; padding: 15px; box-sizing: border-box; gap: 15px; }
         
-        /* --- 왼쪽 패널 --- */
-        .control-panel { 
-            width: 300px; 
-            background: #ffffff; 
-            padding: 20px; 
-            border-radius: 20px; 
-            box-shadow: var(--card-shadow); 
-            z-index: 100; overflow-y: auto; flex-shrink: 0;
-        }
-        .control-panel h2 { 
-            font-size: 1.3rem; margin-top: 0; color: var(--main-blue); 
-            letter-spacing: -0.5px; font-weight: 800;
-            display: inline-block; margin-bottom: 10px;
-            background: linear-gradient(to top, var(--point-yellow) 40%, transparent 40%);
-        }
+        /* 왼쪽 패널 */
+        .control-panel { width: 320px; background: #ffffff; padding: 20px; border-radius: 20px; box-shadow: var(--card-shadow); z-index: 100; overflow-y: auto; flex-shrink: 0; }
+        .control-panel h2 { font-size: 1.3rem; margin-top: 0; color: var(--main-blue); letter-spacing: -0.5px; font-weight: 800; display: inline-block; margin-bottom: 10px; background: linear-gradient(to top, var(--point-yellow) 40%, transparent 40%); }
         
-        .guide-btn {
-            display: block; width: 100%; padding: 10px;
-            background: #E8F0FE; color: var(--main-blue);
-            border: 1px dashed var(--main-blue); border-radius: 8px;
-            font-weight: bold; cursor: pointer; margin-bottom: 20px;
-            transition: 0.2s; text-align: center; font-size: 0.9rem;
-        }
+        .guide-btn { display: block; width: 100%; padding: 10px; background: #E8F0FE; color: var(--main-blue); border: 1px dashed var(--main-blue); border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; text-align: center; font-size: 0.9rem; }
         .guide-btn:hover { background: var(--main-blue); color: white; border-style: solid; }
 
-        .group { 
-            background: #fff; border: 2px solid #E8F0FE; 
-            padding: 15px; border-radius: 12px; margin-bottom: 15px; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
-        }
-        .group-title { 
-            font-size: 0.9rem; font-weight: bold; color: var(--main-blue); 
-            margin-bottom: 10px; display: flex; align-items: center; gap: 5px;
-        }
+        .group { background: #fff; border: 2px solid #E8F0FE; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.02); }
+        .group-title { font-size: 0.9rem; font-weight: bold; color: var(--main-blue); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
         
-        input[type="file"], input[type="text"] { 
-            width: 100%; padding: 8px; background: #F8FBFF; border: 1px solid #D0E2FF; 
-            border-radius: 8px; margin-bottom: 8px; 
-            box-sizing: border-box; font-family: inherit; color: var(--main-blue);
-            outline: none; transition: all 0.2s; font-size: 0.85rem;
-        }
-        input[type="file"]::file-selector-button {
-            background: var(--light-blue); color: white; border: none; 
-            padding: 6px 10px; border-radius: 6px; cursor: pointer; margin-right: 8px; font-weight: bold; font-size: 0.8rem;
-        }
+        /* 입력 컨트롤 */
+        input[type="file"], input[type="text"] { width: 100%; padding: 8px; background: #F8FBFF; border: 1px solid #D0E2FF; border-radius: 8px; margin-bottom: 8px; box-sizing: border-box; font-family: inherit; color: var(--main-blue); outline: none; font-size: 0.85rem; }
         input[type="range"] { width: 100%; cursor: pointer; margin: 10px 0; display: block; accent-color: var(--main-blue); }
         label { font-size: 0.8rem; color: #6E7F91; font-weight: 600; display: flex; justify-content: space-between; margin-top:5px;}
         
-        .btn { 
-            width: 100%; padding: 12px; border: none; border-radius: 10px; 
-            font-weight: bold; cursor: pointer; transition: all 0.2s; margin-top: 5px; font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
+        /* URL 입력 그룹 */
+        .url-input-group { display: flex; gap: 5px; margin-bottom: 8px; }
+        .url-input-group input { margin-bottom: 0; }
+        .url-btn { background: var(--light-blue); color: white; border: none; border-radius: 6px; padding: 0 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem; white-space: nowrap; }
+        .url-btn:hover { background: var(--main-blue); }
+
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn:hover { transform: translateY(-2px); }
         .btn-blue { background: linear-gradient(135deg, var(--light-blue), var(--main-blue)); color: white; }
         .btn-danger { background: linear-gradient(135deg, #FF6B6B, #FF3B3B); color: white; }
 
-        /* --- 오른쪽 작업 공간 --- */
-        .workspace { 
-            flex: 1; background-color: rgba(255, 255, 255, 0.6);
-            border-radius: 20px; border: 2px solid #fff;
-            box-shadow: var(--card-shadow);
-            display: flex; justify-content: center; align-items: center; padding: 20px; overflow: auto; 
-        }
-        #dualStage {
-            position: relative; display: flex; align-items: flex-end; justify-content: center;
-            padding: 30px; 
-            /* 화면이 작아도 잘리지 않도록 최소 크기 유지 */
-            min-width: 900px; min-height: 600px;
-        }
+        /* 작업 공간 */
+        .workspace { flex: 1; background-color: rgba(255, 255, 255, 0.6); border-radius: 20px; border: 2px solid #fff; box-shadow: var(--card-shadow); display: flex; justify-content: center; align-items: center; padding: 20px; overflow: auto; }
+        #dualStage { position: relative; display: flex; align-items: flex-end; justify-content: center; padding: 30px; min-width: 900px; min-height: 600px; }
 
-        /* --- 프레임 스타일 --- */
+        /* 프레임 */
         .pc-wrapper { position: relative; z-index: 10; margin-right: -30px; }
-        .pc-frame {
-            background: #222; border-radius: 12px 12px 0 0; padding: 12px 12px 0 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 3px solid #333; border-bottom: none;
-        }
+        .pc-frame { background: #222; border-radius: 12px 12px 0 0; padding: 12px 12px 0 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 3px solid #333; border-bottom: none; }
         .pc-screen { width: 640px; height: 400px; background: #fff; position: relative; overflow: hidden; border-radius: 4px; }
         .pc-chin { height: 35px; background: #1a1a1a; border-radius: 0 0 12px 12px; display: flex; justify-content: center; align-items: center; }
         .pc-chin::after { content: ''; width: 5px; height: 5px; background: #fff; border-radius: 50%; opacity: 0.6; box-shadow: 0 0 4px #fff; }
         .pc-stand { width: 140px; height: 45px; background: linear-gradient(#333, #111); margin: 0 auto; border-radius: 0 0 10px 10px; }
 
         .phone-wrapper { position: relative; z-index: 20; margin-bottom: -5px; }
-        .phone-frame {
-            background: #111; border-radius: 36px; padding: 10px;
-            box-shadow: -15px 20px 40px rgba(0,0,0,0.5); border: 3px solid #444;
-        }
+        .phone-frame { background: #111; border-radius: 36px; padding: 10px; box-shadow: -15px 20px 40px rgba(0,0,0,0.5); border: 3px solid #444; }
         .phone-screen { width: 256px; height: 512px; background: #fff; border-radius: 28px; position: relative; overflow: hidden; }
         .phone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 70px; height: 20px; background: #000; border-radius: 10px; z-index: 100; pointer-events: none; }
 
-        .bg-img { position: absolute; top: 0; left: 0; width: 100%; display: none; pointer-events: none; }
-        .placeholder { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            color: #A0B0C0; font-weight: bold; pointer-events: none; text-align: center; width: 100%; line-height: 1.6; font-size: 0.9rem;
-        }
-
+        .bg-img { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; } /* display:none 제거함 (자동로드 위해) */
+        
         .draggable { position: absolute; cursor: grab; z-index: 999; line-height: 0; }
         .draggable:active { cursor: grabbing; }
         .draggable img { width: 100%; border-radius: 4px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); transition: width 0.1s; }
 
-        .drag-text { 
-            position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; 
-            text-shadow: 2px 2px 0px #fff; cursor: grab; z-index: 2000; white-space: nowrap; padding: 6px 12px; 
-            border: 2px dashed transparent; border-radius: 10px; user-select: none;
-        }
+        .drag-text { position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; text-shadow: 2px 2px 0px #fff; cursor: grab; z-index: 2000; white-space: nowrap; padding: 6px 12px; border: 2px dashed transparent; border-radius: 10px; user-select: none; }
         .drag-text:hover { border-color: var(--light-blue); background: rgba(255,255,255,0.5); }
         .drag-text:focus { cursor: text; border-color: var(--main-blue); background: #fff; outline: none; user-select: text; }
 
         .editing .draggable { outline: 2px dashed var(--main-blue); }
         .editing .drag-text { border: 2px dashed var(--main-blue); }
 
-        /* --- 팝업창 --- */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); z-index: 9999;
-            justify-content: center; align-items: center;
-        }
-        .modal-content {
-            background: white; width: 90%; max-width: 500px;
-            padding: 30px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            position: relative; animation: slideUp 0.3s ease-out;
-        }
+        /* 팝업 */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 500px; padding: 30px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-header h3 { margin: 0 0 15px 0; color: var(--main-blue); font-size: 1.5rem; }
         .close-btn { position: absolute; top: 20px; right: 25px; font-size: 24px; cursor: pointer; color: #aaa; }
         .step-list { list-style: none; padding: 0; margin: 0; }
         .step-list li { margin-bottom: 15px; padding-left: 10px; border-left: 3px solid var(--light-blue); }
         .step-title { font-weight: bold; font-size: 1.05rem; display: block; margin-bottom: 4px; color: #333; }
         .step-desc { font-size: 0.9rem; color: #666; line-height: 1.5; }
-        .modal-footer { margin-top: 20px; text-align: right; }
-        .btn-confirm { background: var(--main-blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .creator-info { margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; font-size: 0.85rem; color: #888; text-align: center; }
+        .btn-confirm { background: var(--main-blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; float: right; margin-top: 15px; }
+        .creator-info { margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; font-size: 0.85rem; color: #888; text-align: center; clear: both; }
     </style>
 </head>
 <body>
@@ -171,35 +95,46 @@
 <div class="app-container">
     <div class="control-panel">
         <h2>🧪 유튜브 썸네일 연구소</h2>
-        <button class="guide-btn" id="openGuide">📘 사용 방법 (처음이라면 클릭!)</button>
+        <button class="guide-btn" id="openGuide">📘 사용 방법 (필독)</button>
         
         <div class="group">
-            <span class="group-title">🖼️ 1. 배경 설정</span>
-            <label>🖥 PC 배경</label>
-            <input type="file" id="pcBgInput" accept="image/*">
-            <input type="range" id="pcBgScroll" min="-1000" max="0" value="0">
-            <hr style="margin:10px 0; border:0; border-top:1px dashed #D0E2FF;">
-            <label>📱 모바일 배경</label>
-            <input type="file" id="moBgInput" accept="image/*">
-            <input type="range" id="moBgScroll" min="-1000" max="0" value="0">
+            <span class="group-title">🖼️ 1. 배경 설정 (자동)</span>
+            <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
+                * 폴더에 <b>bg-pc.png</b>, <b>bg-mo.png</b> 파일이 있으면 자동 적용됩니다.
+            </p>
+            <label>화면 위치 조절 (스크롤)</label>
+            <input type="range" id="pcBgScroll" min="-1000" max="0" value="0" title="PC 스크롤">
+            <input type="range" id="moBgScroll" min="-1000" max="0" value="0" title="모바일 스크롤">
         </div>
 
         <div class="group">
-            <span class="group-title">✨ 2. 썸네일 비교 (최대 3개)</span>
-            <label>썸네일 1 (메인)</label>
+            <span class="group-title">✨ 2. 썸네일 비교 (3개)</span>
+            
+            <label>썸네일 1 (내 파일)</label>
             <input type="file" id="thumbInput1" accept="image/*">
             
-            <label>썸네일 2 (비교용)</label>
+            <hr style="margin:10px 0; border:0; border-top:1px dashed #D0E2FF;">
+
+            <label>썸네일 2 (경쟁사)</label>
+            <div class="url-input-group">
+                <input type="text" id="urlInput2" placeholder="유튜브 링크 (Ctrl+V)">
+                <button class="url-btn" onclick="loadFromUrl(2)">가져오기</button>
+            </div>
             <input type="file" id="thumbInput2" accept="image/*">
 
-            <label>썸네일 3 (비교용)</label>
+            <hr style="margin:10px 0; border:0; border-top:1px dashed #D0E2FF;">
+
+            <label>썸네일 3 (경쟁사)</label>
+            <div class="url-input-group">
+                <input type="text" id="urlInput3" placeholder="유튜브 링크 (Ctrl+V)">
+                <button class="url-btn" onclick="loadFromUrl(3)">가져오기</button>
+            </div>
             <input type="file" id="thumbInput3" accept="image/*">
 
             <hr style="margin:15px 0; border:0; border-top:1px dashed #D0E2FF;">
             
-            <label>PC 크기 (전체 조절)</label>
+            <label>크기 조절 (PC/모바일 동시)</label>
             <input type="range" id="sizePC" min="100" max="500" value="280">
-            <label>모바일 크기 (전체 조절)</label>
             <input type="range" id="sizeMO" min="50" max="260" value="230">
         </div>
 
@@ -219,19 +154,18 @@
             <div class="pc-wrapper">
                 <div class="pc-frame">
                     <div class="pc-screen" id="pcScreen">
-                        <div class="placeholder">PC 배경<br>(640px)</div>
-                        <img id="pcBgImg" class="bg-img" src="">
+                        <img id="pcBgImg" class="bg-img" src="bg-pc.png" onerror="this.style.display='none'; document.getElementById('pcPlace').style.display='block';">
+                        <div id="pcPlace" class="placeholder" style="display:none;">bg-pc.png 파일을<br>폴더에 넣어주세요</div>
                         
                         <div id="thumbPC1" class="draggable" style="top:50px; left:180px; width:280px;">
-                            <img id="imgPC1" src="" style="display:none;">
+                            <img id="imgPC1" src="" style="display:none;" crossorigin="anonymous">
                         </div>
                         <div id="thumbPC2" class="draggable" style="top:120px; left:180px; width:280px;">
-                            <img id="imgPC2" src="" style="display:none;">
+                            <img id="imgPC2" src="" style="display:none;" crossorigin="anonymous">
                         </div>
                         <div id="thumbPC3" class="draggable" style="top:190px; left:180px; width:280px;">
-                            <img id="imgPC3" src="" style="display:none;">
+                            <img id="imgPC3" src="" style="display:none;" crossorigin="anonymous">
                         </div>
-
                     </div>
                     <div class="pc-chin"></div>
                 </div>
@@ -241,19 +175,18 @@
                 <div class="phone-frame">
                     <div class="phone-screen" id="moScreen">
                         <div class="phone-notch"></div>
-                        <div class="placeholder">모바일 배경<br>(256px)</div>
-                        <img id="moBgImg" class="bg-img" src="">
+                        <img id="moBgImg" class="bg-img" src="bg-mo.png" onerror="this.style.display='none'; document.getElementById('moPlace').style.display='block';">
+                        <div id="moPlace" class="placeholder" style="display:none;">bg-mo.png 파일을<br>폴더에 넣어주세요</div>
                         
                         <div id="thumbMO1" class="draggable" style="top:80px; left:13px; width:230px;">
-                            <img id="imgMO1" src="" style="display:none;">
+                            <img id="imgMO1" src="" style="display:none;" crossorigin="anonymous">
                         </div>
                         <div id="thumbMO2" class="draggable" style="top:150px; left:13px; width:230px;">
-                            <img id="imgMO2" src="" style="display:none;">
+                            <img id="imgMO2" src="" style="display:none;" crossorigin="anonymous">
                         </div>
                         <div id="thumbMO3" class="draggable" style="top:220px; left:13px; width:230px;">
-                            <img id="imgMO3" src="" style="display:none;">
+                            <img id="imgMO3" src="" style="display:none;" crossorigin="anonymous">
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -264,36 +197,32 @@
 <div class="modal-overlay" id="guideModal">
     <div class="modal-content">
         <span class="close-btn" id="closeGuide">&times;</span>
-        <div class="modal-header">
-            <h3>📘 썸네일 연구소 사용 설명서</h3>
-        </div>
+        <h3>📘 썸네일 연구소 사용 설명서</h3>
         <ul class="step-list">
             <li>
-                <span class="step-title">1단계: 배경 준비하기 🖼️</span>
-                <span class="step-desc">유튜브 화면을 캡처해서 PC와 모바일 배경에 각각 넣어주세요.</span>
+                <span class="step-title">배경 자동 설정 🖼️</span>
+                <span class="step-desc">폴더에 <b>bg-pc.png</b>와 <b>bg-mo.png</b>를 넣어두면 자동으로 배경이 뜹니다! (매번 업로드 X)</span>
             </li>
             <li>
-                <span class="step-title">2단계: 썸네일 비교하기 (최대 3개) ✨</span>
-                <span class="step-desc"><b>'썸네일'</b>을 불러오면 화면 중앙에 겹쳐서 나타납니다. 마우스로 드래그해서 원하는 위치로 옮겨보세요.</span>
+                <span class="step-title">URL로 썸네일 가져오기 🔗</span>
+                <span class="step-desc">유튜브 영상 링크를 복사해서 붙여넣고 <b>[가져오기]</b>를 누르면 경쟁사 썸네일이 바로 뜹니다.</span>
             </li>
             <li>
-                <span class="step-title">3단계: 동시 크기 조절 📏</span>
-                <span class="step-desc"><b>'크기 조절 슬라이더'</b>를 움직이면 모든 썸네일이 <b>동시에</b> 같은 비율로 커집니다.</span>
+                <span class="step-title">배치 및 비교 ✨</span>
+                <span class="step-desc">썸네일을 드래그해서 위치를 잡고, 슬라이더로 크기를 조절해 비교해보세요.</span>
             </li>
             <li>
-                <span class="step-title">4단계: 고화질 저장 📸</span>
-                <span class="step-desc"><b>'화면 저장하기'</b>를 누르면 <b>세로 1200px 고해상도</b>로 깔끔하게 저장됩니다.</span>
+                <span class="step-title">고화질 저장 📸</span>
+                <span class="step-desc"><b>'화면 저장하기'</b>를 누르면 1200px 고해상도로 깔끔하게 저장됩니다.</span>
             </li>
         </ul>
         <p class="creator-info">모든 문의사항은 사이트 제작자 <b>[곽민지]</b>에게 부탁드립니다. 🙇‍♀️</p>
-        <div class="modal-footer">
-            <button class="btn-confirm" id="okGuide">알겠습니다! 바로 시작하기</button>
-        </div>
+        <button class="btn-confirm" id="okGuide">확인</button>
     </div>
 </div>
 
 <script>
-    // 팝업 제어
+    // 팝업
     const modal = document.getElementById('guideModal');
     const openBtn = document.getElementById('openGuide');
     const closeBtn = document.getElementById('closeGuide');
@@ -301,39 +230,36 @@
     openBtn.addEventListener('click', () => modal.style.display = 'flex');
     closeBtn.addEventListener('click', () => modal.style.display = 'none');
     okBtn.addEventListener('click', () => modal.style.display = 'none');
-    window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
-    // 배경 이미지 로드
-    function setupImageLoader(inputId, imgId, scrollId) {
-        document.getElementById(inputId).addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    const img = document.getElementById(imgId);
-                    img.src = evt.target.result;
-                    img.style.display = 'block';
-                    img.parentElement.querySelector('.placeholder').style.display = 'none';
-                    const tempImg = new Image();
-                    tempImg.src = evt.target.result;
-                    tempImg.onload = function() {
-                        const range = document.getElementById(scrollId);
-                        const containerH = img.parentElement.offsetHeight;
-                        range.min = Math.min(0, -(this.height - containerH));
-                        range.value = 0; img.style.top = '0px';
-                    }
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-        document.getElementById(scrollId).addEventListener('input', function(e) {
-            document.getElementById(imgId).style.top = e.target.value + 'px';
-        });
+    // 스크롤 (배경 이미지는 자동 로드되므로 스크롤만 연결)
+    document.getElementById('pcBgScroll').addEventListener('input', (e) => document.getElementById('pcBgImg').style.top = e.target.value + 'px');
+    document.getElementById('moBgScroll').addEventListener('input', (e) => document.getElementById('moBgImg').style.top = e.target.value + 'px');
+
+    // [NEW] URL에서 썸네일 추출 로직
+    function getYoutubeId(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
     }
-    setupImageLoader('pcBgInput', 'pcBgImg', 'pcBgScroll');
-    setupImageLoader('moBgInput', 'moBgImg', 'moBgScroll');
 
-    // 썸네일 로드
+    function loadFromUrl(num) {
+        const url = document.getElementById(`urlInput${num}`).value;
+        const videoId = getYoutubeId(url);
+        
+        if (videoId) {
+            const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            // PC & Mobile 이미지 소스 업데이트
+            const pcImg = document.getElementById(`imgPC${num}`);
+            const moImg = document.getElementById(`imgMO${num}`);
+            
+            pcImg.src = thumbUrl; pcImg.style.display = 'block';
+            moImg.src = thumbUrl; moImg.style.display = 'block';
+        } else {
+            alert("올바른 유튜브 주소가 아닙니다! (예: https://youtu.be/...)");
+        }
+    }
+
+    // 파일 업로드 로직 (기존 유지)
     function setupThumbLoader(inputId, pcImgId, moImgId) {
         document.getElementById(inputId).addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -379,7 +305,7 @@
         document.getElementById('dualStage').appendChild(textEl);
     });
 
-    // 드래그 기능
+    // 드래그
     let activeDrag = null;
     let startX, startY, initLeft, initTop;
     document.addEventListener('mousedown', function(e) {
@@ -403,29 +329,25 @@
         document.removeEventListener('mouseup', onMouseUp);
     }
 
-    // [중요] 저장 및 스케일링 로직 수정 (1200px 고정)
+    // 저장
     const stage = document.getElementById('dualStage');
     const toggleBtn = document.getElementById('toggleGuide');
-    
     toggleBtn.addEventListener('click', function() {
         stage.classList.toggle('editing');
         this.innerText = stage.classList.contains('editing') ? "🟥 가이드라인 끄기" : "✅ 촬영 준비 완료";
         this.className = stage.classList.contains('editing') ? "btn btn-danger" : "btn btn-blue";
         if(!stage.classList.contains('editing')) this.style.background = "linear-gradient(135deg, #00E676, #00C853)";
     });
-
     document.getElementById('saveBtn').addEventListener('click', function() {
         const wasEditing = stage.classList.contains('editing');
         if(wasEditing) toggleBtn.click();
+        const scaleFactor = 1200 / stage.offsetHeight;
         
-        // 목표 높이 1200px에 맞춘 배율 계산
-        const targetHeight = 1200;
-        const currentHeight = stage.offsetHeight;
-        const scaleFactor = targetHeight / currentHeight;
-
+        // CORS 문제 방지를 위해 useCORS 옵션 추가
         html2canvas(stage, { 
             backgroundColor: null, 
-            scale: scaleFactor // 동적 배율 적용
+            scale: scaleFactor,
+            useCORS: true 
         }).then(canvas => {
             const link = document.createElement('a');
             link.download = 'thumbnail_lab_1200px.png';

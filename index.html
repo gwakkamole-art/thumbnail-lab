@@ -7,7 +7,7 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Auto-Fixed PNG)</title>
+    <title>유튜브 썸네일 연구소 (Auto-Fit)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- ✨ 디자인 테마 --- */
@@ -67,21 +67,23 @@
             object-fit: cover; object-position: top;
         }
         
-        /* --- 📌 썸네일 고정 위치 (계산됨) --- */
+        /* --- 📌 썸네일 고정 위치 (정밀 보정됨) --- */
         .fixed-thumb { position: absolute; z-index: 999; line-height: 0; pointer-events: none; } 
         .fixed-thumb img { width: 100%; height: 100%; border-radius: 4px; object-fit: cover; }
 
-        /* PC 화면 좌표 (640px 기준 비율 환산) */
-        #thumbPC1 { top: 62px;  left: 172px; width: 164px; height: 92px; }
-        #thumbPC2 { top: 177px; left: 172px; width: 164px; height: 92px; }
-        #thumbPC3 { top: 292px; left: 172px; width: 164px; height: 92px; }
-        #thumbPC4 { top: 407px; left: 172px; width: 164px; height: 92px; }
+        /* [PC 좌표 수정] 리스트형 (왼쪽 정렬) */
+        /* 화면 너비 640px 기준, 왼쪽 여백 약 22px, 썸네일 너비 약 200px */
+        #thumbPC1 { top: 88px;  left: 22px; width: 200px; height: 112px; }
+        #thumbPC2 { top: 232px; left: 22px; width: 200px; height: 112px; } /* 간격 약 144px (썸네일+텍스트높이) */
+        #thumbPC3 { top: 376px; left: 22px; width: 200px; height: 112px; }
+        #thumbPC4 { top: 520px; left: 22px; width: 200px; height: 112px; }
 
-        /* 모바일 화면 좌표 (256px 기준 비율 환산) */
-        #thumbMO1 { top: 88px;  left: 10px; width: 236px; height: 132px; }
-        #thumbMO2 { top: 258px; left: 10px; width: 236px; height: 132px; }
-        #thumbMO3 { top: 428px; left: 10px; width: 236px; height: 132px; }
-        #thumbMO4 { top: 598px; left: 10px; width: 236px; height: 132px; }
+        /* [Mobile 좌표 수정] 카드형 (중앙 정렬) */
+        /* 화면 너비 256px 기준, 좌우 여백 10px, 썸네일 너비 236px */
+        #thumbMO1 { top: 100px; left: 10px; width: 236px; height: 132px; }
+        #thumbMO2 { top: 340px; left: 10px; width: 236px; height: 132px; } /* 텍스트 공간(약 108px) 확보 */
+        #thumbMO3 { top: 580px; left: 10px; width: 236px; height: 132px; }
+        #thumbMO4 { top: 820px; left: 10px; width: 236px; height: 132px; }
 
         .drag-text { position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; text-shadow: 2px 2px 0px #fff; cursor: grab; z-index: 2000; white-space: nowrap; padding: 6px 12px; border: 2px dashed transparent; border-radius: 10px; user-select: none; }
         .drag-text:hover { border-color: var(--light-blue); background: rgba(255,255,255,0.5); }
@@ -113,7 +115,7 @@
             <span class="group-title">🖼️ 배경 (자동 고정됨)</span>
             <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
                 * <b>bg-pc.png</b> / <b>bg-mo.png</b> 파일 사용<br>
-                * 썸네일 위치와 크기는 자동으로 맞춰집니다.
+                * 배경에 맞춰 썸네일 위치가 고정됩니다.
             </p>
         </div>
 
@@ -196,11 +198,11 @@
 <div class="modal-overlay" id="guideModal">
     <div class="modal-content">
         <span class="close-btn" id="closeGuide">&times;</span>
-        <h3>📘 사용 설명서 (자동화 버전)</h3>
+        <h3>📘 사용 설명서 (좌표 보정판)</h3>
         <ul class="step-list">
             <li><span class="step-title">배경 준비 ✅</span><span class="step-desc"><b>bg-pc.png</b>, <b>bg-mo.png</b> 파일을 폴더에 넣어주세요.</span></li>
-            <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일을 선택하거나 유튜브 URL을 넣으면 <b>정해진 위치에 자동으로</b> 쏙 들어갑니다. (드래그 불필요)</span></li>
-            <li><span class="step-title">텍스트 추가 💬</span><span class="step-desc">제목이나 설명이 필요하면 텍스트를 추가해서 자유롭게 배치하세요.</span></li>
+            <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일을 선택하거나 유튜브 URL을 넣으면 <b>정확한 위치에 자동으로</b> 들어갑니다.</span></li>
+            <li><span class="step-title">텍스트 추가 💬</span><span class="step-desc">텍스트를 추가해서 자유롭게 배치하세요.</span></li>
             <li><span class="step-title">저장하기 📸</span><span class="step-desc">버튼만 누르면 고화질로 저장 완료!</span></li>
         </ul>
         <p class="creator-info">문의: 사이트 제작자 <b>[곽민지]</b> 🙇‍♀️</p>

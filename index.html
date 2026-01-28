@@ -7,7 +7,7 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Final)</title>
+    <title>유튜브 썸네일 연구소 (Final Clean)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- ✨ 디자인 테마 --- */
@@ -36,11 +36,16 @@
         input[type="file"]::file-selector-button { background: var(--light-blue); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; margin-right: 8px; font-weight: bold; font-size: 0.8rem; }
         label { font-size: 0.8rem; color: #6E7F91; font-weight: 600; display: flex; justify-content: space-between; margin-top:5px;}
         
-        /* URL 입력 그룹 */
-        .url-input-group { display: flex; gap: 5px; margin-bottom: 8px; }
-        .url-input-group input { margin-bottom: 0; }
-        .url-btn { background: var(--light-blue); color: white; border: none; border-radius: 6px; padding: 0 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem; white-space: nowrap; }
+        /* URL 및 버튼 그룹 */
+        .url-input-group { display: flex; gap: 5px; margin-bottom: 8px; align-items: center; }
+        .url-input-group input { margin-bottom: 0; flex: 1; }
+        
+        .url-btn { background: var(--light-blue); color: white; border: none; border-radius: 6px; padding: 0 10px; height: 34px; cursor: pointer; font-weight: bold; font-size: 0.8rem; white-space: nowrap; }
         .url-btn:hover { background: var(--main-blue); }
+
+        /* [NEW] 쓰레기통 버튼 스타일 */
+        .trash-btn { background: #FF5252; color: white; border: none; border-radius: 6px; padding: 0 8px; height: 34px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+        .trash-btn:hover { background: #FF1744; }
 
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn:hover { transform: translateY(-2px); }
@@ -69,23 +74,21 @@
             object-fit: cover; object-position: top;
         }
         
-        /* --- 📌 썸네일 고정 위치 (박사님 데이터 적용 완료) --- */
+        /* 썸네일 고정 위치 */
         .fixed-thumb { position: absolute; z-index: 999; line-height: 0; pointer-events: none; } 
         .fixed-thumb img { width: 100%; height: 100%; border-radius: 4px; object-fit: cover; }
 
         /* PC (데이터: 88, 41, 168, 99) */
-        /* Height = 168 * 9 / 16 = 94.5px */
         #thumbPC1 { left: 88px; width: 168px; height: 94.5px; top: 41px; }
-        #thumbPC2 { left: 88px; width: 168px; height: 94.5px; top: 140px; } /* 41 + 99 */
-        #thumbPC3 { left: 88px; width: 168px; height: 94.5px; top: 239px; } /* 140 + 99 */
-        #thumbPC4 { left: 88px; width: 168px; height: 94.5px; top: 338px; } /* 239 + 99 */
+        #thumbPC2 { left: 88px; width: 168px; height: 94.5px; top: 140px; }
+        #thumbPC3 { left: 88px; width: 168px; height: 94.5px; top: 239px; }
+        #thumbPC4 { left: 88px; width: 168px; height: 94.5px; top: 338px; }
 
         /* Mobile (데이터: 33, 85, 191, 146) */
-        /* Height = 191 * 9 / 16 = 107.5px */
         #thumbMO1 { left: 33px; width: 191px; height: 107.5px; top: 85px; }
-        #thumbMO2 { left: 33px; width: 191px; height: 107.5px; top: 231px; } /* 85 + 146 */
-        #thumbMO3 { left: 33px; width: 191px; height: 107.5px; top: 377px; } /* 231 + 146 */
-        #thumbMO4 { left: 33px; width: 191px; height: 107.5px; top: 523px; } /* 377 + 146 */
+        #thumbMO2 { left: 33px; width: 191px; height: 107.5px; top: 231px; }
+        #thumbMO3 { left: 33px; width: 191px; height: 107.5px; top: 377px; }
+        #thumbMO4 { left: 33px; width: 191px; height: 107.5px; top: 523px; }
 
         .drag-text { position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; text-shadow: 2px 2px 0px #fff; cursor: grab; z-index: 2000; white-space: nowrap; padding: 6px 12px; border: 2px dashed transparent; border-radius: 10px; user-select: none; }
         .drag-text:hover { border-color: var(--light-blue); background: rgba(255,255,255,0.5); }
@@ -114,40 +117,41 @@
         <button class="guide-btn" id="openGuide">📘 사용 방법 (필독)</button>
         
         <div class="group">
-            <span class="group-title">🖼️ 배경 (자동 고정됨)</span>
-            <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
-                * <b>bg-pc.png</b> / <b>bg-mo.png</b> 파일 사용<br>
-                * 썸네일 위치는 자동으로 고정됩니다.
-            </p>
-        </div>
-
-        <div class="group">
-            <span class="group-title">✨ 썸네일 채우기 (4개)</span>
+            <span class="group-title">✨ 썸네일 채우기</span>
             
             <label>1번 위치 (맨 위)</label>
-            <input type="file" id="thumbInput1" accept="image/*">
+            <div class="url-input-group">
+                <input type="file" id="thumbInput1" accept="image/*">
+                <button class="trash-btn" onclick="clearThumb(1)" title="삭제">🗑️</button>
+            </div>
+            
             <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
 
             <label>2번 위치</label>
             <div class="url-input-group">
                 <input type="text" id="urlInput2" placeholder="URL 입력">
                 <button class="url-btn" onclick="loadFromUrl(2)">가져오기</button>
+                <button class="trash-btn" onclick="clearThumb(2)" title="삭제">🗑️</button>
             </div>
             <input type="file" id="thumbInput2" accept="image/*">
+            
             <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
 
             <label>3번 위치</label>
             <div class="url-input-group">
                 <input type="text" id="urlInput3" placeholder="URL 입력">
                 <button class="url-btn" onclick="loadFromUrl(3)">가져오기</button>
+                <button class="trash-btn" onclick="clearThumb(3)" title="삭제">🗑️</button>
             </div>
             <input type="file" id="thumbInput3" accept="image/*">
+            
             <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
 
             <label>4번 위치 (맨 아래)</label>
             <div class="url-input-group">
                 <input type="text" id="urlInput4" placeholder="URL 입력">
                 <button class="url-btn" onclick="loadFromUrl(4)">가져오기</button>
+                <button class="trash-btn" onclick="clearThumb(4)" title="삭제">🗑️</button>
             </div>
             <input type="file" id="thumbInput4" accept="image/*">
         </div>
@@ -198,10 +202,10 @@
 <div class="modal-overlay" id="guideModal">
     <div class="modal-content">
         <span class="close-btn" id="closeGuide">&times;</span>
-        <h3>📘 사용 설명서 (최종판)</h3>
+        <h3>📘 사용 설명서</h3>
         <ul class="step-list">
-            <li><span class="step-title">배경 자동 로드 🖼️</span><span class="step-desc"><b>bg-pc.png</b>, <b>bg-mo.png</b> 파일을 폴더에 넣어두면 자동으로 뜹니다.</span></li>
-            <li><span class="step-title">자동 위치 고정 ✨</span><span class="step-desc">파일이나 URL을 넣으면 <b>지정된 위치에 정확하게</b> 들어갑니다. (더 이상 조절할 필요 없음!)</span></li>
+            <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일을 선택하거나 유튜브 URL을 넣으면 정해진 위치에 자동으로 들어갑니다.</span></li>
+            <li><span class="step-title">삭제하기 🗑️</span><span class="step-desc">잘못 넣었을 땐 빨간색 휴지통 버튼을 누르면 초기화됩니다.</span></li>
             <li><span class="step-title">텍스트 추가 💬</span><span class="step-desc">제목이나 설명이 필요하면 텍스트를 추가해서 자유롭게 배치하세요.</span></li>
             <li><span class="step-title">저장하기 📸</span><span class="step-desc">버튼만 누르면 고화질로 저장 완료!</span></li>
         </ul>
@@ -219,6 +223,22 @@
     openBtn.addEventListener('click', () => modal.style.display = 'flex');
     closeBtn.addEventListener('click', () => modal.style.display = 'none');
     okBtn.addEventListener('click', () => modal.style.display = 'none');
+
+    // [NEW] 썸네일 초기화(삭제) 함수
+    function clearThumb(num) {
+        // 인풋 초기화
+        const urlInput = document.getElementById(`urlInput${num}`);
+        if(urlInput) urlInput.value = '';
+        
+        const fileInput = document.getElementById(`thumbInput${num}`);
+        if(fileInput) fileInput.value = '';
+
+        // 이미지 숨기기
+        const pcImg = document.getElementById(`imgPC${num}`);
+        const moImg = document.getElementById(`imgMO${num}`);
+        pcImg.src = ''; pcImg.style.display = 'none';
+        moImg.src = ''; moImg.style.display = 'none';
+    }
 
     // URL 로드
     function getYoutubeId(url) {
@@ -277,7 +297,7 @@
     let activeDrag = null;
     let startX, startY, initLeft, initTop;
     document.addEventListener('mousedown', function(e) {
-        const target = e.target.closest('.drag-text'); // 썸네일은 드래그 제외
+        const target = e.target.closest('.drag-text');
         if(!target || target.isContentEditable) return;
         activeDrag = target; e.preventDefault();
         startX = e.clientX; startY = e.clientY;

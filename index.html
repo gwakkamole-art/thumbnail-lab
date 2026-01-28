@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="유튜브 썸네일 클릭률 테스트 시뮬레이터">
-    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
-    
-    <title>유튜브 썸네일 연구소 (Auto-Fit)</title>
+    <title>유튜브 썸네일 연구소 (Final-Fit)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- ✨ 디자인 테마 --- */
@@ -24,24 +22,17 @@
         /* 왼쪽 패널 */
         .control-panel { width: 320px; background: #ffffff; padding: 20px; border-radius: 20px; box-shadow: var(--card-shadow); z-index: 100; overflow-y: auto; flex-shrink: 0; }
         .control-panel h2 { font-size: 1.3rem; margin-top: 0; color: var(--main-blue); letter-spacing: -0.5px; font-weight: 800; display: inline-block; margin-bottom: 10px; background: linear-gradient(to top, var(--point-yellow) 40%, transparent 40%); }
-        
         .guide-btn { display: block; width: 100%; padding: 10px; background: #E8F0FE; color: var(--main-blue); border: 1px dashed var(--main-blue); border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; text-align: center; font-size: 0.9rem; }
         .guide-btn:hover { background: var(--main-blue); color: white; border-style: solid; }
-
         .group { background: #fff; border: 2px solid #E8F0FE; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.02); }
         .group-title { font-size: 0.9rem; font-weight: bold; color: var(--main-blue); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
         
         /* 입력 컨트롤 */
         input[type="file"], input[type="text"] { width: 100%; padding: 8px; background: #F8FBFF; border: 1px solid #D0E2FF; border-radius: 8px; margin-bottom: 8px; box-sizing: border-box; font-family: inherit; color: var(--main-blue); outline: none; font-size: 0.85rem; }
-        
-        /* URL 입력 그룹 */
         .url-input-group { display: flex; gap: 5px; margin-bottom: 8px; }
         .url-input-group input { margin-bottom: 0; }
         .url-btn { background: var(--light-blue); color: white; border: none; border-radius: 6px; padding: 0 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem; white-space: nowrap; }
-        .url-btn:hover { background: var(--main-blue); }
-
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .btn:hover { transform: translateY(-2px); }
         .btn-blue { background: linear-gradient(135deg, var(--light-blue), var(--main-blue)); color: white; }
         .btn-danger { background: linear-gradient(135deg, #FF6B6B, #FF3B3B); color: white; }
 
@@ -62,33 +53,27 @@
         .phone-screen { width: 256px; height: 512px; background: #fff; border-radius: 28px; position: relative; overflow: hidden; }
         .phone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 70px; height: 20px; background: #000; border-radius: 10px; z-index: 100; pointer-events: none; }
 
-        .bg-img { 
-            position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; 
-            object-fit: cover; object-position: top;
-        }
+        .bg-img { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; object-fit: cover; object-position: top; }
         
-        /* --- 📌 썸네일 고정 위치 (정밀 보정됨) --- */
+        /* --- 📌 [수정됨] 썸네일 고정 위치 (정밀 좌표) --- */
         .fixed-thumb { position: absolute; z-index: 999; line-height: 0; pointer-events: none; } 
         .fixed-thumb img { width: 100%; height: 100%; border-radius: 4px; object-fit: cover; }
 
-        /* [PC 좌표 수정] 리스트형 (왼쪽 정렬) */
-        /* 화면 너비 640px 기준, 왼쪽 여백 약 22px, 썸네일 너비 약 200px */
-        #thumbPC1 { top: 88px;  left: 22px; width: 200px; height: 112px; }
-        #thumbPC2 { top: 232px; left: 22px; width: 200px; height: 112px; } /* 간격 약 144px (썸네일+텍스트높이) */
-        #thumbPC3 { top: 376px; left: 22px; width: 200px; height: 112px; }
-        #thumbPC4 { top: 520px; left: 22px; width: 200px; height: 112px; }
+        /* PC (리스트형): 왼쪽 24px 여백, 너비 190px, 높이 간격 약 148px */
+        #thumbPC1 { top: 86px;  left: 24px; width: 190px; height: 107px; }
+        #thumbPC2 { top: 234px; left: 24px; width: 190px; height: 107px; }
+        #thumbPC3 { top: 382px; left: 24px; width: 190px; height: 107px; }
+        #thumbPC4 { top: 530px; left: 24px; width: 190px; height: 107px; }
 
-        /* [Mobile 좌표 수정] 카드형 (중앙 정렬) */
-        /* 화면 너비 256px 기준, 좌우 여백 10px, 썸네일 너비 236px */
+        /* Mobile (카드형): 좌우 10px 여백, 너비 236px, 높이 간격 약 236px */
         #thumbMO1 { top: 100px; left: 10px; width: 236px; height: 132px; }
-        #thumbMO2 { top: 340px; left: 10px; width: 236px; height: 132px; } /* 텍스트 공간(약 108px) 확보 */
-        #thumbMO3 { top: 580px; left: 10px; width: 236px; height: 132px; }
-        #thumbMO4 { top: 820px; left: 10px; width: 236px; height: 132px; }
+        #thumbMO2 { top: 336px; left: 10px; width: 236px; height: 132px; }
+        #thumbMO3 { top: 572px; left: 10px; width: 236px; height: 132px; }
+        #thumbMO4 { top: 808px; left: 10px; width: 236px; height: 132px; }
 
         .drag-text { position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; text-shadow: 2px 2px 0px #fff; cursor: grab; z-index: 2000; white-space: nowrap; padding: 6px 12px; border: 2px dashed transparent; border-radius: 10px; user-select: none; }
         .drag-text:hover { border-color: var(--light-blue); background: rgba(255,255,255,0.5); }
         .drag-text:focus { cursor: text; border-color: var(--main-blue); background: #fff; outline: none; user-select: text; }
-
         .editing .drag-text { border: 2px dashed var(--main-blue); }
 
         /* 팝업 */
@@ -277,7 +262,7 @@
     let activeDrag = null;
     let startX, startY, initLeft, initTop;
     document.addEventListener('mousedown', function(e) {
-        const target = e.target.closest('.drag-text'); // 썸네일은 드래그 제외
+        const target = e.target.closest('.drag-text');
         if(!target || target.isContentEditable) return;
         activeDrag = target; e.preventDefault();
         startX = e.clientX; startY = e.clientY;
@@ -308,7 +293,7 @@
             useCORS: true 
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'thumbnail_lab_fixed.png';
+            link.download = 'thumbnail_lab_final.png';
             link.href = canvas.toDataURL();
             link.click();
         });

@@ -7,7 +7,7 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Multi-View)</title>
+    <title>유튜브 썸네일 연구소 (Real-View)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- ✨ 디자인 테마 변수 --- */
@@ -132,7 +132,14 @@
 
         .draggable { position: absolute; cursor: grab; z-index: 999; line-height: 0; }
         .draggable:active { cursor: grabbing; }
-        .draggable img { width: 100%; border-radius: 10px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); transition: width 0.1s; }
+        
+        /* [수정됨] 썸네일 이미지 스타일: 곡률을 유튜브 스타일(4px)로 변경 */
+        .draggable img { 
+            width: 100%; 
+            border-radius: 4px; /* 여기가 핵심! 10px -> 4px */
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2); 
+            transition: width 0.1s; 
+        }
 
         .drag-text { 
             position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; 

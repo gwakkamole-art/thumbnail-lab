@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="유튜브 썸네일 클릭률 테스트 시뮬레이터">
+    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
-    <title>유튜브 썸네일 연구소 (Final-Fit)</title>
+    
+    <title>유튜브 썸네일 연구소 (Calibrator)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- ✨ 디자인 테마 --- */
@@ -20,18 +22,26 @@
         .app-container { display: flex; height: 100vh; padding: 15px; box-sizing: border-box; gap: 15px; }
         
         /* 왼쪽 패널 */
-        .control-panel { width: 320px; background: #ffffff; padding: 20px; border-radius: 20px; box-shadow: var(--card-shadow); z-index: 100; overflow-y: auto; flex-shrink: 0; }
+        .control-panel { width: 340px; background: #ffffff; padding: 20px; border-radius: 20px; box-shadow: var(--card-shadow); z-index: 100; overflow-y: auto; flex-shrink: 0; }
         .control-panel h2 { font-size: 1.3rem; margin-top: 0; color: var(--main-blue); letter-spacing: -0.5px; font-weight: 800; display: inline-block; margin-bottom: 10px; background: linear-gradient(to top, var(--point-yellow) 40%, transparent 40%); }
+        
         .guide-btn { display: block; width: 100%; padding: 10px; background: #E8F0FE; color: var(--main-blue); border: 1px dashed var(--main-blue); border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; text-align: center; font-size: 0.9rem; }
         .guide-btn:hover { background: var(--main-blue); color: white; border-style: solid; }
+
         .group { background: #fff; border: 2px solid #E8F0FE; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.02); }
-        .group-title { font-size: 0.9rem; font-weight: bold; color: var(--main-blue); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
-        
+        .group-title { font-size: 0.95rem; font-weight: bold; color: var(--main-blue); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        .sub-title { font-size: 0.85rem; font-weight: bold; color: #555; margin-top: 10px; display: block; margin-bottom: 5px; }
+
         /* 입력 컨트롤 */
         input[type="file"], input[type="text"] { width: 100%; padding: 8px; background: #F8FBFF; border: 1px solid #D0E2FF; border-radius: 8px; margin-bottom: 8px; box-sizing: border-box; font-family: inherit; color: var(--main-blue); outline: none; font-size: 0.85rem; }
+        input[type="range"] { width: 100%; cursor: pointer; margin: 8px 0; display: block; accent-color: var(--main-blue); }
+        label { font-size: 0.8rem; color: #6E7F91; font-weight: 600; display: flex; justify-content: space-between; margin-top:2px;}
+        
+        /* URL 입력 그룹 */
         .url-input-group { display: flex; gap: 5px; margin-bottom: 8px; }
         .url-input-group input { margin-bottom: 0; }
         .url-btn { background: var(--light-blue); color: white; border: none; border-radius: 6px; padding: 0 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem; white-space: nowrap; }
+        
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-blue { background: linear-gradient(135deg, var(--light-blue), var(--main-blue)); color: white; }
         .btn-danger { background: linear-gradient(135deg, #FF6B6B, #FF3B3B); color: white; }
@@ -55,21 +65,9 @@
 
         .bg-img { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; object-fit: cover; object-position: top; }
         
-        /* --- 📌 [수정됨] 썸네일 고정 위치 (정밀 좌표) --- */
-        .fixed-thumb { position: absolute; z-index: 999; line-height: 0; pointer-events: none; } 
+        /* 썸네일 공통 */
+        .fixed-thumb { position: absolute; z-index: 999; line-height: 0; pointer-events: none; transition: all 0.1s; } 
         .fixed-thumb img { width: 100%; height: 100%; border-radius: 4px; object-fit: cover; }
-
-        /* PC (리스트형): 왼쪽 24px 여백, 너비 190px, 높이 간격 약 148px */
-        #thumbPC1 { top: 86px;  left: 24px; width: 190px; height: 107px; }
-        #thumbPC2 { top: 234px; left: 24px; width: 190px; height: 107px; }
-        #thumbPC3 { top: 382px; left: 24px; width: 190px; height: 107px; }
-        #thumbPC4 { top: 530px; left: 24px; width: 190px; height: 107px; }
-
-        /* Mobile (카드형): 좌우 10px 여백, 너비 236px, 높이 간격 약 236px */
-        #thumbMO1 { top: 100px; left: 10px; width: 236px; height: 132px; }
-        #thumbMO2 { top: 336px; left: 10px; width: 236px; height: 132px; }
-        #thumbMO3 { top: 572px; left: 10px; width: 236px; height: 132px; }
-        #thumbMO4 { top: 808px; left: 10px; width: 236px; height: 132px; }
 
         .drag-text { position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; text-shadow: 2px 2px 0px #fff; cursor: grab; z-index: 2000; white-space: nowrap; padding: 6px 12px; border: 2px dashed transparent; border-radius: 10px; user-select: none; }
         .drag-text:hover { border-color: var(--light-blue); background: rgba(255,255,255,0.5); }
@@ -99,49 +97,56 @@
         <div class="group">
             <span class="group-title">🖼️ 배경 (자동 고정됨)</span>
             <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
-                * <b>bg-pc.png</b> / <b>bg-mo.png</b> 파일 사용<br>
-                * 배경에 맞춰 썸네일 위치가 고정됩니다.
+                * <b>bg-pc.png</b> / <b>bg-mo.png</b> 자동 로드
             </p>
         </div>
 
         <div class="group">
-            <span class="group-title">✨ 썸네일 채우기 (자동 배치)</span>
+            <span class="group-title">🎛️ 위치/크기 미세 조절</span>
             
-            <label>1번 위치 (맨 위)</label>
-            <input type="file" id="thumbInput1" accept="image/*">
-            <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
+            <span class="sub-title">🖥️ PC 화면 조절</span>
+            <label>가로 위치 (Left) <span id="val_pcLeft"></span></label>
+            <input type="range" id="pcLeft" min="0" max="640" value="22"> <label>세로 시작점 (Top) <span id="val_pcTop"></span></label>
+            <input type="range" id="pcTop" min="0" max="400" value="88"> <label>썸네일 너비 (Width) <span id="val_pcW"></span></label>
+            <input type="range" id="pcW" min="50" max="300" value="168"> <label>썸네일 간격 (Gap) <span id="val_pcGap"></span></label>
+            <input type="range" id="pcGap" min="50" max="200" value="146">
 
-            <label>2번 위치</label>
-            <div class="url-input-group">
-                <input type="text" id="urlInput2" placeholder="URL 입력">
-                <button class="url-btn" onclick="loadFromUrl(2)">가져오기</button>
-            </div>
+            <hr style="margin:15px 0; border:0; border-top:1px dashed #D0E2FF;">
+
+            <span class="sub-title">📱 모바일 화면 조절</span>
+            <label>가로 위치 (Left) <span id="val_moLeft"></span></label>
+            <input type="range" id="moLeft" min="0" max="256" value="13">
+            
+            <label>세로 시작점 (Top) <span id="val_moTop"></span></label>
+            <input type="range" id="moTop" min="0" max="600" value="100">
+            
+            <label>썸네일 너비 (Width) <span id="val_moW"></span></label>
+            <input type="range" id="moW" min="50" max="256" value="230">
+            
+            <label>썸네일 간격 (Gap) <span id="val_moGap"></span></label>
+            <input type="range" id="moGap" min="100" max="400" value="240">
+        </div>
+
+        <div class="group">
+            <span class="group-title">✨ 썸네일 채우기 (4개)</span>
+            <label>1번 (내 파일)</label> <input type="file" id="thumbInput1" accept="image/*">
+            <hr style="margin:5px 0; border:0; border-top:1px dashed #eee;">
+            <label>2번 (URL)</label> 
+            <div class="url-input-group"><input type="text" id="urlInput2"><button class="url-btn" onclick="loadFromUrl(2)">Go</button></div>
             <input type="file" id="thumbInput2" accept="image/*">
-            <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
-
-            <label>3번 위치</label>
-            <div class="url-input-group">
-                <input type="text" id="urlInput3" placeholder="URL 입력">
-                <button class="url-btn" onclick="loadFromUrl(3)">가져오기</button>
-            </div>
+            <hr style="margin:5px 0; border:0; border-top:1px dashed #eee;">
+            <label>3번 (URL)</label> 
+            <div class="url-input-group"><input type="text" id="urlInput3"><button class="url-btn" onclick="loadFromUrl(3)">Go</button></div>
             <input type="file" id="thumbInput3" accept="image/*">
-            <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
-
-            <label>4번 위치 (맨 아래)</label>
-            <div class="url-input-group">
-                <input type="text" id="urlInput4" placeholder="URL 입력">
-                <button class="url-btn" onclick="loadFromUrl(4)">가져오기</button>
-            </div>
+            <hr style="margin:5px 0; border:0; border-top:1px dashed #eee;">
+            <label>4번 (URL)</label> 
+            <div class="url-input-group"><input type="text" id="urlInput4"><button class="url-btn" onclick="loadFromUrl(4)">Go</button></div>
             <input type="file" id="thumbInput4" accept="image/*">
         </div>
 
         <div class="group">
-            <span class="group-title">💬 텍스트 추가</span>
-            <button class="btn btn-blue" id="addTextBtn">+ 텍스트 추가하기</button>
-        </div>
-
-        <div class="group" style="border-color: transparent; background: transparent; box-shadow: none; padding:0;">
-            <button class="btn btn-blue" id="saveBtn" style="background: linear-gradient(135deg, #FFC107, #FF9800); color:white;">📸 화면 저장하기 (1200px)</button>
+            <button class="btn btn-blue" id="addTextBtn">💬 텍스트 추가</button>
+            <button class="btn btn-blue" id="saveBtn" style="background: linear-gradient(135deg, #FFC107, #FF9800); color:white;">📸 화면 저장하기</button>
         </div>
     </div>
 
@@ -152,7 +157,6 @@
                     <div class="pc-screen" id="pcScreen">
                         <img id="pcBgImg" class="bg-img" src="bg-pc.png" onerror="this.style.display='none'; document.getElementById('pcPlace').style.display='block';">
                         <div id="pcPlace" class="placeholder" style="display:none;">bg-pc.png 없음</div>
-                        
                         <div id="thumbPC1" class="fixed-thumb"><img id="imgPC1" src="" style="display:none;" crossorigin="anonymous"></div>
                         <div id="thumbPC2" class="fixed-thumb"><img id="imgPC2" src="" style="display:none;" crossorigin="anonymous"></div>
                         <div id="thumbPC3" class="fixed-thumb"><img id="imgPC3" src="" style="display:none;" crossorigin="anonymous"></div>
@@ -168,7 +172,6 @@
                         <div class="phone-notch"></div>
                         <img id="moBgImg" class="bg-img" src="bg-mo.png" onerror="this.style.display='none'; document.getElementById('moPlace').style.display='block';">
                         <div id="moPlace" class="placeholder" style="display:none;">bg-mo.png 없음</div>
-                        
                         <div id="thumbMO1" class="fixed-thumb"><img id="imgMO1" src="" style="display:none;" crossorigin="anonymous"></div>
                         <div id="thumbMO2" class="fixed-thumb"><img id="imgMO2" src="" style="display:none;" crossorigin="anonymous"></div>
                         <div id="thumbMO3" class="fixed-thumb"><img id="imgMO3" src="" style="display:none;" crossorigin="anonymous"></div>
@@ -183,11 +186,11 @@
 <div class="modal-overlay" id="guideModal">
     <div class="modal-content">
         <span class="close-btn" id="closeGuide">&times;</span>
-        <h3>📘 사용 설명서 (좌표 보정판)</h3>
+        <h3>📘 사용 설명서 (V18.0)</h3>
         <ul class="step-list">
             <li><span class="step-title">배경 준비 ✅</span><span class="step-desc"><b>bg-pc.png</b>, <b>bg-mo.png</b> 파일을 폴더에 넣어주세요.</span></li>
-            <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일을 선택하거나 유튜브 URL을 넣으면 <b>정확한 위치에 자동으로</b> 들어갑니다.</span></li>
-            <li><span class="step-title">텍스트 추가 💬</span><span class="step-desc">텍스트를 추가해서 자유롭게 배치하세요.</span></li>
+            <li><span class="step-title">🎛️ 위치가 안 맞나요?</span><span class="step-desc">왼쪽 패널의 <b>[미세 조절 슬라이더]</b>를 움직여보세요! 썸네일 크기와 간격을 내 맘대로 맞출 수 있습니다. (이게 핵심!)</span></li>
+            <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일을 선택하거나 유튜브 URL을 넣으세요.</span></li>
             <li><span class="step-title">저장하기 📸</span><span class="step-desc">버튼만 누르면 고화질로 저장 완료!</span></li>
         </ul>
         <p class="creator-info">문의: 사이트 제작자 <b>[곽민지]</b> 🙇‍♀️</p>
@@ -204,6 +207,50 @@
     openBtn.addEventListener('click', () => modal.style.display = 'flex');
     closeBtn.addEventListener('click', () => modal.style.display = 'none');
     okBtn.addEventListener('click', () => modal.style.display = 'none');
+
+    // --- [핵심] 위치 미세 조절 로직 ---
+    function updateLayout() {
+        // PC 값 가져오기
+        const pcL = parseInt(document.getElementById('pcLeft').value);
+        const pcT = parseInt(document.getElementById('pcTop').value);
+        const pcW = parseInt(document.getElementById('pcW').value);
+        const pcGap = parseInt(document.getElementById('pcGap').value);
+        const pcH = pcW * 9 / 16; // 16:9 비율 유지
+
+        // PC 적용
+        for(let i=1; i<=4; i++) {
+            const el = document.getElementById(`thumbPC${i}`);
+            el.style.left = `${pcL}px`;
+            el.style.top = `${pcT + (i-1)*pcGap}px`;
+            el.style.width = `${pcW}px`;
+            el.style.height = `${pcH}px`;
+        }
+
+        // Mobile 값 가져오기
+        const moL = parseInt(document.getElementById('moLeft').value);
+        const moT = parseInt(document.getElementById('moTop').value);
+        const moW = parseInt(document.getElementById('moW').value);
+        const moGap = parseInt(document.getElementById('moGap').value);
+        const moH = moW * 9 / 16;
+
+        // Mobile 적용
+        for(let i=1; i<=4; i++) {
+            const el = document.getElementById(`thumbMO${i}`);
+            el.style.left = `${moL}px`;
+            el.style.top = `${moT + (i-1)*moGap}px`;
+            el.style.width = `${moW}px`;
+            el.style.height = `${moH}px`;
+        }
+    }
+
+    // 슬라이더 이벤트 연결
+    const sliders = ['pcLeft', 'pcTop', 'pcW', 'pcGap', 'moLeft', 'moTop', 'moW', 'moGap'];
+    sliders.forEach(id => {
+        document.getElementById(id).addEventListener('input', updateLayout);
+    });
+
+    // 초기 실행
+    updateLayout();
 
     // URL 로드
     function getYoutubeId(url) {
@@ -246,7 +293,7 @@
     setupThumbLoader('thumbInput3', 'imgPC3', 'imgMO3');
     setupThumbLoader('thumbInput4', 'imgPC4', 'imgMO4');
 
-    // 텍스트 추가 (드래그 가능)
+    // 텍스트 추가
     document.getElementById('addTextBtn').addEventListener('click', function() {
         const textEl = document.createElement('div');
         textEl.className = 'drag-text';
@@ -258,7 +305,7 @@
         document.getElementById('dualStage').appendChild(textEl);
     });
 
-    // 텍스트 드래그 기능
+    // 텍스트 드래그
     let activeDrag = null;
     let startX, startY, initLeft, initTop;
     document.addEventListener('mousedown', function(e) {
@@ -282,7 +329,7 @@
         document.removeEventListener('mouseup', onMouseUp);
     }
 
-    // 저장 (1200px)
+    // 저장
     document.getElementById('saveBtn').addEventListener('click', function() {
         const stage = document.getElementById('dualStage');
         const scaleFactor = 1200 / stage.offsetHeight;
@@ -293,7 +340,7 @@
             useCORS: true 
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'thumbnail_lab_final.png';
+            link.download = 'thumbnail_lab_calibrated.png';
             link.href = canvas.toDataURL();
             link.click();
         });

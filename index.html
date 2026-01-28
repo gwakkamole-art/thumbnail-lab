@@ -3,92 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>유튜브 썸네일 연구소 (데이터 추출용)</title>
+    <meta name="description" content="유튜브 썸네일 클릭률 테스트 시뮬레이터">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+    
+    <title>유튜브 썸네일 연구소 (Final)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* 테마 */
-        :root { --main-blue:#2E4CB2; --bg-start:#F0F5FF; --bg-end:#DDE9FF; }
-        body { margin:0; font-family:'Pretendard', sans-serif; background:linear-gradient(135deg, var(--bg-start), var(--bg-end)); color:#333; overflow:hidden; font-size:14px; }
-        .app-container { display:flex; height:100vh; padding:15px; box-sizing:border-box; gap:15px; }
+        /* --- ✨ 디자인 테마 --- */
+        :root {
+            --main-blue: #2E4CB2; --light-blue: #5183F0;
+            --bg-gradient-start: #F0F5FF; --bg-gradient-end: #DDE9FF;
+            --point-yellow: #FFF6B0; --text-dark: #2C3E50;
+            --card-shadow: 0 10px 20px rgba(46, 76, 178, 0.08);
+        }
+
+        body { margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end)); color: var(--text-dark); overflow: hidden; font-size: 14px; }
+        .app-container { display: flex; height: 100vh; padding: 15px; box-sizing: border-box; gap: 15px; }
         
-        /* 패널 */
-        .control-panel { width:340px; background:#fff; padding:20px; border-radius:20px; box-shadow:0 10px 20px rgba(0,0,0,0.08); overflow-y:auto; flex-shrink:0; }
-        h2 { margin-top:0; color:var(--main-blue); border-bottom:2px solid #eee; padding-bottom:10px; }
+        /* 왼쪽 패널 */
+        .control-panel { width: 320px; background: #ffffff; padding: 20px; border-radius: 20px; box-shadow: var(--card-shadow); z-index: 100; overflow-y: auto; flex-shrink: 0; }
+        .control-panel h2 { font-size: 1.3rem; margin-top: 0; color: var(--main-blue); letter-spacing: -0.5px; font-weight: 800; display: inline-block; margin-bottom: 10px; background: linear-gradient(to top, var(--point-yellow) 40%, transparent 40%); }
         
-        .group { background:#fff; border:2px solid #E8F0FE; padding:15px; border-radius:12px; margin-bottom:15px; }
-        .group-title { font-weight:bold; color:var(--main-blue); display:block; margin-bottom:10px; }
-        .sub-title { font-size:0.85rem; font-weight:bold; color:#555; margin-top:15px; display:block; background:#eee; padding:5px; border-radius:4px; }
+        .guide-btn { display: block; width: 100%; padding: 10px; background: #E8F0FE; color: var(--main-blue); border: 1px dashed var(--main-blue); border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; text-align: center; font-size: 0.9rem; }
+        .guide-btn:hover { background: var(--main-blue); color: white; border-style: solid; }
 
-        /* 값 표시용 스타일 */
-        .val-display { color: #E91E63; font-weight: bold; float: right; }
-
-        input[type="range"] { width:100%; margin:8px 0; cursor:pointer; accent-color:var(--main-blue); }
-        label { font-size:0.8rem; color:#666; display:block; margin-top:5px; }
+        .group { background: #fff; border: 2px solid #E8F0FE; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.02); }
+        .group-title { font-size: 0.9rem; font-weight: bold; color: var(--main-blue); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
         
-        /* 작업공간 */
-        .workspace { flex:1; background:rgba(255,255,255,0.6); border-radius:20px; display:flex; justify-content:center; align-items:center; overflow:auto; }
-        #dualStage { position:relative; display:flex; align-items:flex-end; padding:30px; min-width:900px; min-height:600px; }
+        /* 입력 컨트롤 */
+        input[type="file"], input[type="text"] { width: 100%; padding: 8px; background: #F8FBFF; border: 1px solid #D0E2FF; border-radius: 8px; margin-bottom: 8px; box-sizing: border-box; font-family: inherit; color: var(--main-blue); outline: none; font-size: 0.85rem; }
+        input[type="file"]::file-selector-button { background: var(--light-blue); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; margin-right: 8px; font-weight: bold; font-size: 0.8rem; }
+        label { font-size: 0.8rem; color: #6E7F91; font-weight: 600; display: flex; justify-content: space-between; margin-top:5px;}
+        
+        /* URL 입력 그룹 */
+        .url-input-group { display: flex; gap: 5px; margin-bottom: 8px; }
+        .url-input-group input { margin-bottom: 0; }
+        .url-btn { background: var(--light-blue); color: white; border: none; border-radius: 6px; padding: 0 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem; white-space: nowrap; }
+        .url-btn:hover { background: var(--main-blue); }
 
-        /* 프레임 & 썸네일 */
-        .pc-wrapper { position:relative; z-index:10; margin-right:-30px; }
-        .pc-frame { background:#222; border-radius:12px 12px 0 0; padding:12px 12px 0 12px; border:3px solid #333; }
-        .pc-screen { width:640px; height:400px; background:#fff; position:relative; overflow:hidden; }
-        .pc-stand { width:140px; height:45px; background:#333; margin:0 auto; border-radius:0 0 10px 10px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-blue { background: linear-gradient(135deg, var(--light-blue), var(--main-blue)); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #FF6B6B, #FF3B3B); color: white; }
 
-        .phone-wrapper { position:relative; z-index:20; margin-bottom:-5px; }
-        .phone-frame { background:#111; border-radius:36px; padding:10px; border:3px solid #444; }
-        .phone-screen { width:256px; height:512px; background:#fff; border-radius:28px; position:relative; overflow:hidden; }
-        .phone-notch { position:absolute; top:14px; left:50%; transform:translateX(-50%); width:70px; height:20px; background:#000; border-radius:10px; z-index:100; }
+        /* 작업 공간 */
+        .workspace { flex: 1; background-color: rgba(255, 255, 255, 0.6); border-radius: 20px; border: 2px solid #fff; box-shadow: var(--card-shadow); display: flex; justify-content: center; align-items: center; padding: 20px; overflow: auto; }
+        #dualStage { position: relative; display: flex; align-items: flex-end; justify-content: center; padding: 30px; min-width: 900px; min-height: 600px; }
 
-        .bg-img { position:absolute; top:0; left:0; width:100%; pointer-events:none; object-fit:cover; object-position:top; }
-        .fixed-thumb { position:absolute; z-index:999; pointer-events:none; }
-        .fixed-thumb img { width:100%; height:100%; border-radius:4px; object-fit:cover; }
+        /* 프레임 */
+        .pc-wrapper { position: relative; z-index: 10; margin-right: -30px; }
+        .pc-frame { background: #222; border-radius: 12px 12px 0 0; padding: 12px 12px 0 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 3px solid #333; border-bottom: none; }
+        .pc-screen { width: 640px; height: 400px; background: #fff; position: relative; overflow: hidden; border-radius: 4px; }
+        .pc-chin { height: 35px; background: #1a1a1a; border-radius: 0 0 12px 12px; display: flex; justify-content: center; align-items: center; }
+        .pc-chin::after { content: ''; width: 5px; height: 5px; background: #fff; border-radius: 50%; opacity: 0.6; box-shadow: 0 0 4px #fff; }
+        .pc-stand { width: 140px; height: 45px; background: linear-gradient(#333, #111); margin: 0 auto; border-radius: 0 0 10px 10px; }
+
+        .phone-wrapper { position: relative; z-index: 20; margin-bottom: -5px; }
+        .phone-frame { background: #111; border-radius: 36px; padding: 10px; box-shadow: -15px 20px 40px rgba(0,0,0,0.5); border: 3px solid #444; }
+        .phone-screen { width: 256px; height: 512px; background: #fff; border-radius: 28px; position: relative; overflow: hidden; }
+        .phone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 70px; height: 20px; background: #000; border-radius: 10px; z-index: 100; pointer-events: none; }
+
+        .bg-img { 
+            position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; 
+            object-fit: cover; object-position: top;
+        }
+        
+        /* --- 📌 썸네일 고정 위치 (박사님 데이터 적용 완료) --- */
+        .fixed-thumb { position: absolute; z-index: 999; line-height: 0; pointer-events: none; } 
+        .fixed-thumb img { width: 100%; height: 100%; border-radius: 4px; object-fit: cover; }
+
+        /* PC (데이터: 88, 41, 168, 99) */
+        /* Height = 168 * 9 / 16 = 94.5px */
+        #thumbPC1 { left: 88px; width: 168px; height: 94.5px; top: 41px; }
+        #thumbPC2 { left: 88px; width: 168px; height: 94.5px; top: 140px; } /* 41 + 99 */
+        #thumbPC3 { left: 88px; width: 168px; height: 94.5px; top: 239px; } /* 140 + 99 */
+        #thumbPC4 { left: 88px; width: 168px; height: 94.5px; top: 338px; } /* 239 + 99 */
+
+        /* Mobile (데이터: 33, 85, 191, 146) */
+        /* Height = 191 * 9 / 16 = 107.5px */
+        #thumbMO1 { left: 33px; width: 191px; height: 107.5px; top: 85px; }
+        #thumbMO2 { left: 33px; width: 191px; height: 107.5px; top: 231px; } /* 85 + 146 */
+        #thumbMO3 { left: 33px; width: 191px; height: 107.5px; top: 377px; } /* 231 + 146 */
+        #thumbMO4 { left: 33px; width: 191px; height: 107.5px; top: 523px; } /* 377 + 146 */
+
+        .drag-text { position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; text-shadow: 2px 2px 0px #fff; cursor: grab; z-index: 2000; white-space: nowrap; padding: 6px 12px; border: 2px dashed transparent; border-radius: 10px; user-select: none; }
+        .drag-text:hover { border-color: var(--light-blue); background: rgba(255,255,255,0.5); }
+        .drag-text:focus { cursor: text; border-color: var(--main-blue); background: #fff; outline: none; user-select: text; }
+
+        .editing .drag-text { border: 2px dashed var(--main-blue); }
+
+        /* 팝업 */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 500px; padding: 30px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 24px; cursor: pointer; color: #aaa; }
+        .step-list { list-style: none; padding: 0; margin: 0; }
+        .step-list li { margin-bottom: 15px; padding-left: 10px; border-left: 3px solid var(--light-blue); }
+        .step-title { font-weight: bold; font-size: 1.05rem; display: block; margin-bottom: 4px; color: #333; }
+        .step-desc { font-size: 0.9rem; color: #666; line-height: 1.5; }
+        .btn-confirm { background: var(--main-blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; float: right; margin-top: 15px; }
+        .creator-info { margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; font-size: 0.85rem; color: #888; text-align: center; clear: both; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="control-panel">
-        <h2>📏 위치 데이터 추출기</h2>
+        <h2>🧪 유튜브 썸네일 연구소</h2>
+        <button class="guide-btn" id="openGuide">📘 사용 방법 (필독)</button>
         
         <div class="group">
-            <span class="group-title">1. 배경 확인</span>
-            <p style="font-size:0.8rem; color:#666;">bg-pc.png / bg-mo.png 자동 로드됨</p>
+            <span class="group-title">🖼️ 배경 (자동 고정됨)</span>
+            <p style="font-size:0.8rem; color:#666; margin-bottom:10px;">
+                * <b>bg-pc.png</b> / <b>bg-mo.png</b> 파일 사용<br>
+                * 썸네일 위치는 자동으로 고정됩니다.
+            </p>
         </div>
 
         <div class="group">
-            <span class="group-title">2. 위치 맞추기 (이 숫자를 주세요!)</span>
+            <span class="group-title">✨ 썸네일 채우기 (4개)</span>
             
-            <span class="sub-title">🖥️ PC 데이터</span>
-            <label>가로 (Left): <span id="val_pcLeft" class="val-display">0</span></label>
-            <input type="range" id="pcLeft" min="0" max="640" value="22">
-            
-            <label>세로 (Top): <span id="val_pcTop" class="val-display">0</span></label>
-            <input type="range" id="pcTop" min="0" max="400" value="88">
-            
-            <label>너비 (Width): <span id="val_pcW" class="val-display">0</span></label>
-            <input type="range" id="pcW" min="50" max="300" value="168">
-            
-            <label>간격 (Gap): <span id="val_pcGap" class="val-display">0</span></label>
-            <input type="range" id="pcGap" min="50" max="200" value="146">
+            <label>1번 위치 (맨 위)</label>
+            <input type="file" id="thumbInput1" accept="image/*">
+            <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
 
-            <span class="sub-title">📱 모바일 데이터</span>
-            <label>가로 (Left): <span id="val_moLeft" class="val-display">0</span></label>
-            <input type="range" id="moLeft" min="0" max="256" value="13">
-            
-            <label>세로 (Top): <span id="val_moTop" class="val-display">0</span></label>
-            <input type="range" id="moTop" min="0" max="600" value="100">
-            
-            <label>너비 (Width): <span id="val_moW" class="val-display">0</span></label>
-            <input type="range" id="moW" min="50" max="256" value="230">
-            
-            <label>간격 (Gap): <span id="val_moGap" class="val-display">0</span></label>
-            <input type="range" id="moGap" min="100" max="400" value="240">
+            <label>2번 위치</label>
+            <div class="url-input-group">
+                <input type="text" id="urlInput2" placeholder="URL 입력">
+                <button class="url-btn" onclick="loadFromUrl(2)">가져오기</button>
+            </div>
+            <input type="file" id="thumbInput2" accept="image/*">
+            <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
+
+            <label>3번 위치</label>
+            <div class="url-input-group">
+                <input type="text" id="urlInput3" placeholder="URL 입력">
+                <button class="url-btn" onclick="loadFromUrl(3)">가져오기</button>
+            </div>
+            <input type="file" id="thumbInput3" accept="image/*">
+            <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">
+
+            <label>4번 위치 (맨 아래)</label>
+            <div class="url-input-group">
+                <input type="text" id="urlInput4" placeholder="URL 입력">
+                <button class="url-btn" onclick="loadFromUrl(4)">가져오기</button>
+            </div>
+            <input type="file" id="thumbInput4" accept="image/*">
         </div>
 
         <div class="group">
-            <span class="group-title">3. 테스트용 썸네일</span>
-            <input type="file" id="testThumb" accept="image/*">
+            <span class="group-title">💬 텍스트 추가</span>
+            <button class="btn btn-blue" id="addTextBtn">+ 텍스트 추가하기</button>
+        </div>
+
+        <div class="group" style="border-color: transparent; background: transparent; box-shadow: none; padding:0;">
+            <button class="btn btn-blue" id="saveBtn" style="background: linear-gradient(135deg, #FFC107, #FF9800); color:white;">📸 화면 저장하기 (1200px)</button>
         </div>
     </div>
 
@@ -96,12 +166,13 @@
         <div id="dualStage">
             <div class="pc-wrapper">
                 <div class="pc-frame">
-                    <div class="pc-screen">
-                        <img class="bg-img" src="bg-pc.png" onerror="alert('bg-pc.png 파일이 없습니다!')">
-                        <div id="thumbPC1" class="fixed-thumb" style="background:red; opacity:0.5;"></div>
-                        <div id="thumbPC2" class="fixed-thumb" style="background:blue; opacity:0.5;"></div>
-                        <div id="thumbPC3" class="fixed-thumb" style="background:green; opacity:0.5;"></div>
-                        <div id="thumbPC4" class="fixed-thumb" style="background:orange; opacity:0.5;"></div>
+                    <div class="pc-screen" id="pcScreen">
+                        <img id="pcBgImg" class="bg-img" src="bg-pc.png" onerror="this.style.display='none'; document.getElementById('pcPlace').style.display='block';">
+                        <div id="pcPlace" class="placeholder" style="display:none;">bg-pc.png 없음</div>
+                        <div id="thumbPC1" class="fixed-thumb"><img id="imgPC1" src="" style="display:none;" crossorigin="anonymous"></div>
+                        <div id="thumbPC2" class="fixed-thumb"><img id="imgPC2" src="" style="display:none;" crossorigin="anonymous"></div>
+                        <div id="thumbPC3" class="fixed-thumb"><img id="imgPC3" src="" style="display:none;" crossorigin="anonymous"></div>
+                        <div id="thumbPC4" class="fixed-thumb"><img id="imgPC4" src="" style="display:none;" crossorigin="anonymous"></div>
                     </div>
                     <div class="pc-chin"></div>
                 </div>
@@ -109,13 +180,14 @@
             </div>
             <div class="phone-wrapper">
                 <div class="phone-frame">
-                    <div class="phone-screen">
+                    <div class="phone-screen" id="moScreen">
                         <div class="phone-notch"></div>
-                        <img class="bg-img" src="bg-mo.png" onerror="alert('bg-mo.png 파일이 없습니다!')">
-                        <div id="thumbMO1" class="fixed-thumb" style="background:red; opacity:0.5;"></div>
-                        <div id="thumbMO2" class="fixed-thumb" style="background:blue; opacity:0.5;"></div>
-                        <div id="thumbMO3" class="fixed-thumb" style="background:green; opacity:0.5;"></div>
-                        <div id="thumbMO4" class="fixed-thumb" style="background:orange; opacity:0.5;"></div>
+                        <img id="moBgImg" class="bg-img" src="bg-mo.png" onerror="this.style.display='none'; document.getElementById('moPlace').style.display='block';">
+                        <div id="moPlace" class="placeholder" style="display:none;">bg-mo.png 없음</div>
+                        <div id="thumbMO1" class="fixed-thumb"><img id="imgMO1" src="" style="display:none;" crossorigin="anonymous"></div>
+                        <div id="thumbMO2" class="fixed-thumb"><img id="imgMO2" src="" style="display:none;" crossorigin="anonymous"></div>
+                        <div id="thumbMO3" class="fixed-thumb"><img id="imgMO3" src="" style="display:none;" crossorigin="anonymous"></div>
+                        <div id="thumbMO4" class="fixed-thumb"><img id="imgMO4" src="" style="display:none;" crossorigin="anonymous"></div>
                     </div>
                 </div>
             </div>
@@ -123,68 +195,124 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="guideModal">
+    <div class="modal-content">
+        <span class="close-btn" id="closeGuide">&times;</span>
+        <h3>📘 사용 설명서 (최종판)</h3>
+        <ul class="step-list">
+            <li><span class="step-title">배경 자동 로드 🖼️</span><span class="step-desc"><b>bg-pc.png</b>, <b>bg-mo.png</b> 파일을 폴더에 넣어두면 자동으로 뜹니다.</span></li>
+            <li><span class="step-title">자동 위치 고정 ✨</span><span class="step-desc">파일이나 URL을 넣으면 <b>지정된 위치에 정확하게</b> 들어갑니다. (더 이상 조절할 필요 없음!)</span></li>
+            <li><span class="step-title">텍스트 추가 💬</span><span class="step-desc">제목이나 설명이 필요하면 텍스트를 추가해서 자유롭게 배치하세요.</span></li>
+            <li><span class="step-title">저장하기 📸</span><span class="step-desc">버튼만 누르면 고화질로 저장 완료!</span></li>
+        </ul>
+        <p class="creator-info">문의: 사이트 제작자 <b>[곽민지]</b> 🙇‍♀️</p>
+        <button class="btn-confirm" id="okGuide">확인</button>
+    </div>
+</div>
+
 <script>
-    // 테스트 이미지 로드
-    document.getElementById('testThumb').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if(file){
-            const url = URL.createObjectURL(file);
-            document.querySelectorAll('.fixed-thumb').forEach(el => {
-                el.style.backgroundImage = `url(${url})`;
-                el.style.backgroundSize = 'cover';
-                el.style.opacity = '1'; // 이미지 넣으면 투명도 해제
-            });
-        }
-    });
+    // 팝업
+    const modal = document.getElementById('guideModal');
+    const openBtn = document.getElementById('openGuide');
+    const closeBtn = document.getElementById('closeGuide');
+    const okBtn = document.getElementById('okGuide');
+    openBtn.addEventListener('click', () => modal.style.display = 'flex');
+    closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    okBtn.addEventListener('click', () => modal.style.display = 'none');
 
-    // 위치 업데이트 함수
-    function updateLayout() {
-        const pcL = parseInt(document.getElementById('pcLeft').value);
-        const pcT = parseInt(document.getElementById('pcTop').value);
-        const pcW = parseInt(document.getElementById('pcW').value);
-        const pcGap = parseInt(document.getElementById('pcGap').value);
-        const pcH = pcW * 9 / 16;
-
-        const moL = parseInt(document.getElementById('moLeft').value);
-        const moT = parseInt(document.getElementById('moTop').value);
-        const moW = parseInt(document.getElementById('moW').value);
-        const moGap = parseInt(document.getElementById('moGap').value);
-        const moH = moW * 9 / 16;
-
-        // 숫자 표시 업데이트 (이게 박사님께 필요한 정보!)
-        document.getElementById('val_pcLeft').innerText = pcL;
-        document.getElementById('val_pcTop').innerText = pcT;
-        document.getElementById('val_pcW').innerText = pcW;
-        document.getElementById('val_pcGap').innerText = pcGap;
-
-        document.getElementById('val_moLeft').innerText = moL;
-        document.getElementById('val_moTop').innerText = moT;
-        document.getElementById('val_moW').innerText = moW;
-        document.getElementById('val_moGap').innerText = moGap;
-
-        // 실제 적용
-        for(let i=1; i<=4; i++) {
-            const pcEl = document.getElementById(`thumbPC${i}`);
-            pcEl.style.left = `${pcL}px`;
-            pcEl.style.top = `${pcT + (i-1)*pcGap}px`;
-            pcEl.style.width = `${pcW}px`;
-            pcEl.style.height = `${pcH}px`;
-
-            const moEl = document.getElementById(`thumbMO${i}`);
-            moEl.style.left = `${moL}px`;
-            moEl.style.top = `${moT + (i-1)*moGap}px`;
-            moEl.style.width = `${moW}px`;
-            moEl.style.height = `${moH}px`;
+    // URL 로드
+    function getYoutubeId(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+    function loadFromUrl(num) {
+        const url = document.getElementById(`urlInput${num}`).value;
+        const videoId = getYoutubeId(url);
+        if (videoId) {
+            const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+            const pcImg = document.getElementById(`imgPC${num}`);
+            const moImg = document.getElementById(`imgMO${num}`);
+            pcImg.src = thumbUrl; pcImg.style.display = 'block';
+            moImg.src = thumbUrl; moImg.style.display = 'block';
+        } else {
+            alert("올바른 유튜브 주소가 아닙니다!");
         }
     }
 
-    // 이벤트 리스너
-    ['pcLeft', 'pcTop', 'pcW', 'pcGap', 'moLeft', 'moTop', 'moW', 'moGap'].forEach(id => {
-        document.getElementById(id).addEventListener('input', updateLayout);
+    // 파일 로드
+    function setupThumbLoader(inputId, pcImgId, moImgId) {
+        document.getElementById(inputId).addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const pcImg = document.getElementById(pcImgId);
+                    const moImg = document.getElementById(moImgId);
+                    pcImg.src = evt.target.result; pcImg.style.display = 'block';
+                    moImg.src = evt.target.result; moImg.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    setupThumbLoader('thumbInput1', 'imgPC1', 'imgMO1');
+    setupThumbLoader('thumbInput2', 'imgPC2', 'imgMO2');
+    setupThumbLoader('thumbInput3', 'imgPC3', 'imgMO3');
+    setupThumbLoader('thumbInput4', 'imgPC4', 'imgMO4');
+
+    // 텍스트 추가 (드래그 가능)
+    document.getElementById('addTextBtn').addEventListener('click', function() {
+        const textEl = document.createElement('div');
+        textEl.className = 'drag-text';
+        textEl.innerText = '텍스트';
+        textEl.contentEditable = false;
+        textEl.style.left = '300px'; textEl.style.top = '150px';
+        textEl.addEventListener('dblclick', function() { this.contentEditable = true; this.focus(); });
+        textEl.addEventListener('blur', function() { this.contentEditable = false; });
+        document.getElementById('dualStage').appendChild(textEl);
     });
 
-    // 초기 실행
-    updateLayout();
+    // 텍스트 드래그 기능
+    let activeDrag = null;
+    let startX, startY, initLeft, initTop;
+    document.addEventListener('mousedown', function(e) {
+        const target = e.target.closest('.drag-text'); // 썸네일은 드래그 제외
+        if(!target || target.isContentEditable) return;
+        activeDrag = target; e.preventDefault();
+        startX = e.clientX; startY = e.clientY;
+        initLeft = target.offsetLeft; initTop = target.offsetTop;
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    });
+    function onMouseMove(e) {
+        if(!activeDrag) return;
+        e.preventDefault();
+        activeDrag.style.left = (initLeft + (e.clientX - startX)) + 'px';
+        activeDrag.style.top = (initTop + (e.clientY - startY)) + 'px';
+    }
+    function onMouseUp() {
+        activeDrag = null;
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    // 저장 (1200px)
+    document.getElementById('saveBtn').addEventListener('click', function() {
+        const stage = document.getElementById('dualStage');
+        const scaleFactor = 1200 / stage.offsetHeight;
+        
+        html2canvas(stage, { 
+            backgroundColor: null, 
+            scale: scaleFactor,
+            useCORS: true 
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'thumbnail_lab_final.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    });
 </script>
 </body>
 </html>

@@ -7,9 +7,20 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Final Clean)</title>
+    <title>유튜브 썸네일 연구소 (Final)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        /* --- 1. Pretendard 웹폰트 적용 --- */
+        @font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Thin.woff2') format('woff2'); font-weight: 100; font-display: swap; }
+        @font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraLight.woff2') format('woff2'); font-weight: 200; font-display: swap; }
+        @font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Light.woff2') format('woff2'); font-weight: 300; font-display: swap; }
+        @font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+        @font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Medium.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+        @font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+        @font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+        @font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraBold.woff2') format('woff2'); font-weight: 800; font-display: swap; }
+        @font-face { font-family: 'Pretendard'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Black.woff2') format('woff2'); font-weight: 900; font-display: swap; }
+
         /* --- ✨ 디자인 테마 --- */
         :root {
             --main-blue: #2E4CB2; --light-blue: #5183F0;
@@ -43,9 +54,14 @@
         .url-btn { background: var(--light-blue); color: white; border: none; border-radius: 6px; padding: 0 10px; height: 34px; cursor: pointer; font-weight: bold; font-size: 0.8rem; white-space: nowrap; }
         .url-btn:hover { background: var(--main-blue); }
 
-        /* [NEW] 쓰레기통 버튼 스타일 */
-        .trash-btn { background: #FF5252; color: white; border: none; border-radius: 6px; padding: 0 8px; height: 34px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
-        .trash-btn:hover { background: #FF1744; }
+        /* [수정] 쓰레기통 버튼: 메인 컬러(파랑)로 통일 */
+        .trash-btn { 
+            background: linear-gradient(135deg, var(--light-blue), var(--main-blue));
+            color: white; border: none; border-radius: 6px; padding: 0 8px; height: 34px; 
+            cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; 
+            transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .trash-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
 
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn:hover { transform: translateY(-2px); }
@@ -114,7 +130,7 @@
 <div class="app-container">
     <div class="control-panel">
         <h2>🧪 유튜브 썸네일 연구소</h2>
-        <button class="guide-btn" id="openGuide">📘 사용 방법 (필독)</button>
+        <button class="guide-btn" id="openGuide">📘 사용 방법 (처음이라면 필독!)</button>
         
         <div class="group">
             <span class="group-title">✨ 썸네일 채우기</span>
@@ -162,7 +178,7 @@
         </div>
 
         <div class="group" style="border-color: transparent; background: transparent; box-shadow: none; padding:0;">
-            <button class="btn btn-blue" id="saveBtn" style="background: linear-gradient(135deg, #FFC107, #FF9800); color:white;">📸 화면 저장하기 (1200px)</button>
+            <button class="btn btn-blue" id="saveBtn" style="background: linear-gradient(135deg, #FFC107, #FF9800); color:white;">📸 화면 저장하기</button>
         </div>
     </div>
 
@@ -205,7 +221,7 @@
         <h3>📘 사용 설명서</h3>
         <ul class="step-list">
             <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일을 선택하거나 유튜브 URL을 넣으면 정해진 위치에 자동으로 들어갑니다.</span></li>
-            <li><span class="step-title">삭제하기 🗑️</span><span class="step-desc">잘못 넣었을 땐 빨간색 휴지통 버튼을 누르면 초기화됩니다.</span></li>
+            <li><span class="step-title">삭제하기 🗑️</span><span class="step-desc">잘못 넣었을 땐 휴지통 버튼을 누르면 초기화됩니다.</span></li>
             <li><span class="step-title">텍스트 추가 💬</span><span class="step-desc">제목이나 설명이 필요하면 텍스트를 추가해서 자유롭게 배치하세요.</span></li>
             <li><span class="step-title">저장하기 📸</span><span class="step-desc">버튼만 누르면 고화질로 저장 완료!</span></li>
         </ul>
@@ -224,16 +240,12 @@
     closeBtn.addEventListener('click', () => modal.style.display = 'none');
     okBtn.addEventListener('click', () => modal.style.display = 'none');
 
-    // [NEW] 썸네일 초기화(삭제) 함수
+    // 썸네일 초기화(삭제) 함수
     function clearThumb(num) {
-        // 인풋 초기화
         const urlInput = document.getElementById(`urlInput${num}`);
         if(urlInput) urlInput.value = '';
-        
         const fileInput = document.getElementById(`thumbInput${num}`);
         if(fileInput) fileInput.value = '';
-
-        // 이미지 숨기기
         const pcImg = document.getElementById(`imgPC${num}`);
         const moImg = document.getElementById(`imgMO${num}`);
         pcImg.src = ''; pcImg.style.display = 'none';

@@ -7,7 +7,7 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Final Fixed)</title>
+    <title>유튜브 썸네일 연구소 (Memory Complete)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- 1. Pretendard 웹폰트 --- */
@@ -84,10 +84,8 @@
         .sub-input-box::before { content: 'B안'; position: absolute; right: 10px; top: 10px; font-size: 10px; background: #FBC02D; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .sub-label { font-size: 0.8rem; color: #F57F17; font-weight: bold; margin-bottom: 5px; display: block; }
 
-        /* 작업 공간 (꽉 찬 캡처를 위해 여백 제거) */
+        /* 작업 공간 (꽉 찬 캡처) */
         .workspace { flex: 1; background-color: rgba(255, 255, 255, 0.6); border-radius: 20px; border: 2px solid #fff; box-shadow: var(--card-shadow); display: flex; justify-content: center; align-items: center; padding: 0; overflow: auto; }
-        
-        /* 캡처 대상 (inline-flex로 내용물 크기만큼만 잡히게) */
         #dualStage { position: relative; display: inline-flex; align-items: flex-end; justify-content: center; padding: 0; }
 
         /* 프레임 스타일 */
@@ -98,7 +96,7 @@
         .pc-chin::after { content: ''; width: 5px; height: 5px; background: #fff; border-radius: 50%; opacity: 0.6; box-shadow: 0 0 4px #fff; }
         .pc-stand { width: 140px; height: 45px; background: linear-gradient(#333, #111); margin: 0 auto; border-radius: 0 0 10px 10px; }
 
-        /* 모바일 프레임 (PC와 살짝 겹치도록 마진 조정) */
+        /* 모바일 프레임 */
         .phone-wrapper { position: relative; z-index: 20; margin-bottom: 0; margin-left: -20px; }
         .phone-frame { background: #111; border-radius: 36px; padding: 10px; box-shadow: -15px 20px 40px rgba(0,0,0,0.5); border: 3px solid #444; }
         .phone-screen { width: 256px; height: 512px; background: #fff; border-radius: 28px; position: relative; overflow: visible !important; }
@@ -108,7 +106,7 @@
         .fixed-thumb { position: absolute; z-index: 999; line-height: 0; pointer-events: none; } 
         .fixed-thumb img { width: 100%; height: 100%; border-radius: 4px; object-fit: cover; }
 
-        /* PC 기본 썸네일 */
+        /* PC 썸네일 */
         #thumbPC1 { left: 88px; width: 168px; height: 94.5px; top: 41px; }
         #thumbPC2 { left: 88px; width: 168px; height: 94.5px; top: 140px; }
         #thumbPC3 { left: 88px; width: 168px; height: 94.5px; top: 239px; }
@@ -118,7 +116,7 @@
         #thumbPC1_B { left: 266px; width: 168px; height: 94.5px; top: 41px; z-index: 1001; opacity: 1 !important; animation: none !important; }
         #thumbPC2_B { left: 266px; width: 168px; height: 94.5px; top: 140px; z-index: 1001; opacity: 1 !important; animation: none !important; }
 
-        /* Mobile 기본 썸네일 */
+        /* Mobile 썸네일 */
         #thumbMO1 { left: 33px; width: 191px; height: 107.5px; top: 85px; }
         #thumbMO2 { left: 33px; width: 191px; height: 107.5px; top: 231px; }
         #thumbMO3 { left: 33px; width: 191px; height: 107.5px; top: 377px; }
@@ -273,7 +271,7 @@
         <span class="close-btn" id="closeGuide">&times;</span>
         <h3>📘 사용 설명서</h3>
         <ul class="step-list">
-            <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일 선택 or URL 입력. (URL은 자동 저장됨!)</span></li>
+            <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일을 선택하거나 유튜브 URL 입력. <b>(둘 다 자동 저장됩니다!)</b></span></li>
             <li><span class="step-title">비교 모드 🆚</span><span class="step-desc">스위치를 켜면 1,2번 우측에 <b>[B안]</b> 추가 가능.</span></li>
             <li><span class="step-title">저장 📸</span><span class="step-desc">B안이 있어도 잘리지 않고 저장됩니다.</span></li>
         </ul>
@@ -292,7 +290,7 @@
     closeBtn.addEventListener('click', () => modal.style.display = 'none');
     okBtn.addEventListener('click', () => modal.style.display = 'none');
 
-    // 비교 모드 토글 (설정 저장 포함)
+    // 비교 모드 토글 (설정 저장)
     const compToggle = document.getElementById('compToggle');
     compToggle.addEventListener('change', function() {
         const uiElements = document.querySelectorAll('.comp-ui');
@@ -305,27 +303,44 @@
 
     // [중요] 초기 로드 및 기억된 데이터 복구
     window.addEventListener('DOMContentLoaded', () => {
-        // 1. 저장된 Youtube URL 복구
-        for(let i=2; i<=4; i++) {
-            const savedUrl = localStorage.getItem(`saved_url_${i}`);
-            if(savedUrl) {
-                const input = document.getElementById(`urlInput${i}`);
-                if(input) {
-                    input.value = savedUrl;
-                    loadFromUrl(i);
+        // 복구 함수
+        const restoreSlot = (i, isB = false) => {
+            const num = isB ? `${i}_B` : i;
+            const inputId = isB ? `thumbInput${i}_B` : `thumbInput${i}`;
+            const urlInputId = isB ? `urlInput${i}_B` : `urlInput${i}`;
+            const pcImgId = isB ? `imgPC${i}_B` : `imgPC${i}`;
+            const moImgId = isB ? `imgMO${i}_B` : `imgMO${i}`;
+
+            // 1. 파일 데이터(이미지)가 있는지 확인
+            const savedImgData = localStorage.getItem(`saved_img_data_${num}`);
+            if(savedImgData) {
+                // 이미지 데이터가 있으면 바로 보여줌
+                const pcImg = document.getElementById(pcImgId);
+                const moImg = document.getElementById(moImgId);
+                if(pcImg) { pcImg.src = savedImgData; pcImg.style.display = 'block'; }
+                if(moImg) { moImg.src = savedImgData; moImg.style.display = 'block'; }
+            } else {
+                // 2. 파일이 없으면 URL 데이터가 있는지 확인
+                const savedUrl = localStorage.getItem(`saved_url_${num}`);
+                if(savedUrl) {
+                    const urlInput = document.getElementById(urlInputId);
+                    if(urlInput) {
+                        urlInput.value = savedUrl;
+                        loadFromUrl(num); // URL 로드 실행
+                    }
                 }
             }
-        }
-        const savedUrl2B = localStorage.getItem(`saved_url_2_B`);
-        if(savedUrl2B) {
-            const input2B = document.getElementById(`urlInput2_B`);
-            if(input2B) {
-                input2B.value = savedUrl2B;
-                loadFromUrl('2_B');
-            }
-        }
+        };
 
-        // 2. 비교 모드 토글 상태 복구
+        // 전체 슬롯 복구
+        restoreSlot(1);
+        restoreSlot(2);
+        restoreSlot(3);
+        restoreSlot(4);
+        restoreSlot(1, true); // 1_B
+        restoreSlot(2, true); // 2_B
+
+        // 비교 모드 상태 복구
         const isCompMode = localStorage.getItem('comp_mode') === 'true';
         if(isCompMode) {
             compToggle.checked = true;
@@ -344,10 +359,8 @@
     // 개별 삭제
     function clearThumb(num) {
         const urlInput = document.getElementById(`urlInput${num}`);
-        if(urlInput) {
-            urlInput.value = '';
-            localStorage.removeItem(`saved_url_${num}`);
-        }
+        if(urlInput) urlInput.value = '';
+        
         const fileInput = document.getElementById(`thumbInput${num}`);
         if(fileInput) fileInput.value = '';
         
@@ -355,6 +368,10 @@
         const moImg = document.getElementById(`imgMO${num}`);
         if(pcImg) { pcImg.src = ''; pcImg.style.display = 'none'; }
         if(moImg) { moImg.src = ''; moImg.style.display = 'none'; }
+
+        // [삭제] 저장소 데이터도 싹 지움
+        localStorage.removeItem(`saved_url_${num}`);
+        localStorage.removeItem(`saved_img_data_${num}`);
     }
 
     // 유튜브 ID 추출
@@ -379,14 +396,16 @@
             if(pcImg) { pcImg.src = thumbUrl; pcImg.style.display = 'block'; }
             if(moImg) { moImg.src = thumbUrl; moImg.style.display = 'block'; }
             
+            // [저장] URL 저장 & 기존 파일 데이터 삭제 (URL이 우선순위)
             localStorage.setItem(`saved_url_${num}`, url);
+            localStorage.removeItem(`saved_img_data_${num}`);
         } else {
             if(url.trim() !== "") alert("올바른 유튜브 주소가 아닙니다!");
         }
     }
 
-    // 파일 로드 설정
-    function setupThumbLoader(inputId, pcImgId, moImgId) {
+    // 파일 로드 설정 (이미지 데이터 저장 기능 추가)
+    function setupThumbLoader(inputId, pcImgId, moImgId, slotNum) {
         const input = document.getElementById(inputId);
         if(!input) return;
         input.addEventListener('change', function(e) {
@@ -394,22 +413,32 @@
             if(file) {
                 const reader = new FileReader();
                 reader.onload = function(evt) {
+                    const resultData = evt.target.result;
+                    
                     const pcImg = document.getElementById(pcImgId);
                     const moImg = document.getElementById(moImgId);
-                    if(pcImg) { pcImg.src = evt.target.result; pcImg.style.display = 'block'; }
-                    if(moImg) { moImg.src = evt.target.result; moImg.style.display = 'block'; }
+                    if(pcImg) { pcImg.src = resultData; pcImg.style.display = 'block'; }
+                    if(moImg) { moImg.src = resultData; moImg.style.display = 'block'; }
+                    
+                    // [저장] 파일 데이터(Base64) 저장 & URL 삭제 (파일이 우선순위)
+                    try {
+                        localStorage.setItem(`saved_img_data_${slotNum}`, resultData);
+                        localStorage.removeItem(`saved_url_${slotNum}`);
+                    } catch (err) {
+                        console.log("이미지 용량이 너무 커서 자동 저장에 실패했습니다.");
+                    }
                 }
                 reader.readAsDataURL(file);
             }
         });
     }
 
-    setupThumbLoader('thumbInput1', 'imgPC1', 'imgMO1');
-    setupThumbLoader('thumbInput2', 'imgPC2', 'imgMO2');
-    setupThumbLoader('thumbInput3', 'imgPC3', 'imgMO3');
-    setupThumbLoader('thumbInput4', 'imgPC4', 'imgMO4');
-    setupThumbLoader('thumbInput1_B', 'imgPC1_B', 'imgMO1_B');
-    setupThumbLoader('thumbInput2_B', 'imgPC2_B', 'imgMO2_B');
+    setupThumbLoader('thumbInput1', 'imgPC1', 'imgMO1', '1');
+    setupThumbLoader('thumbInput2', 'imgPC2', 'imgMO2', '2');
+    setupThumbLoader('thumbInput3', 'imgPC3', 'imgMO3', '3');
+    setupThumbLoader('thumbInput4', 'imgPC4', 'imgMO4', '4');
+    setupThumbLoader('thumbInput1_B', 'imgPC1_B', 'imgMO1_B', '1_B');
+    setupThumbLoader('thumbInput2_B', 'imgPC2_B', 'imgMO2_B', '2_B');
 
     // 텍스트 추가
     document.getElementById('addTextBtn').addEventListener('click', function() {
@@ -447,17 +476,16 @@
         document.removeEventListener('mouseup', onMouseUp);
     }
 
-    // [무적의 저장 기능] - 꽉 찬 캡처 & 모바일 B안 잘림 방지
+    // [무적의 저장 기능]
     document.getElementById('saveBtn').addEventListener('click', function() {
         const stage = document.getElementById('dualStage');
         const btn = this;
         const originalText = btn.innerText;
-        const isCompMode = document.querySelector('.comp-ui.active') !== null; // 비교모드 확인
+        const isCompMode = document.querySelector('.comp-ui.active') !== null;
 
         btn.innerText = "📸 변환 중...";
         btn.disabled = true;
 
-        // 에러 방지 (깨진 이미지 숨김)
         const allImages = stage.querySelectorAll('img');
         allImages.forEach(img => {
             if (!img.complete || img.naturalHeight === 0 || img.src === "") {
@@ -465,14 +493,12 @@
             }
         });
 
-        // 1. 캡처 방식 설정 (inline-flex로 내용물 크기만큼 캡처)
         const originalDisplay = stage.style.display;
         stage.style.display = 'inline-flex';
 
-        // 2. [핵심] 비교 모드일 때만 오른쪽 공간을 강제로 늘림 (B안 썸네일 너비만큼)
         const originalPaddingRight = stage.style.paddingRight;
         if (isCompMode) {
-            stage.style.paddingRight = "185px"; // B안 썸네일(191px)의 튀어나온 부분 커버
+            stage.style.paddingRight = "185px";
         } else {
             stage.style.paddingRight = "0px";
         }
@@ -499,7 +525,7 @@
             btn.innerText = originalText;
             btn.disabled = false;
             stage.style.display = originalDisplay;
-            stage.style.paddingRight = originalPaddingRight; // 패딩 복구
+            stage.style.paddingRight = originalPaddingRight;
         }
     });
 </script>

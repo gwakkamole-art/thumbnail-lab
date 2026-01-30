@@ -122,13 +122,15 @@
         #thumbPC3 { left: 88px; width: 168px; height: 94.5px; top: 239px; }
         #thumbPC4 { left: 88px; width: 168px; height: 94.5px; top: 338px; }
 
-    /* PC B안 썸네일 스타일 (선명하게, 테두리로 강조) */
-        #thumbPC1_B { left: 266px; width: 168px; height: 94.5px; top: 41px; box-shadow: 0 0 0 3px #FFD54F; z-index: 1001; }
-        #thumbPC2_B { left: 266px; width: 168px; height: 94.5px; top: 140px; box-shadow: 0 0 0 3px #FFD54F; z-index: 1001; }
-        
-        /* (참고) 모바일 쪽도 혹시 모르니 z-index 확실히 추가 */
-        #thumbMO1_B { left: 234px; width: 191px; height: 107.5px; top: 85px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); border: 3px solid #FFF6B0; }
-        #thumbMO2_B { left: 234px; width: 191px; height: 107.5px; top: 231px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); border: 3px solid #FFF6B0; }
+    /* PC (데이터: 88, 41, 168, 99) */
+        #thumbPC1 { left: 88px; width: 168px; height: 94.5px; top: 41px; }
+        #thumbPC2 { left: 88px; width: 168px; height: 94.5px; top: 140px; }
+        #thumbPC3 { left: 88px; width: 168px; height: 94.5px; top: 239px; }
+        #thumbPC4 { left: 88px; width: 168px; height: 94.5px; top: 338px; }
+
+        /* [NEW] PC 비교 썸네일 (B안) - 선명하게, 테두리 제거 */
+        #thumbPC1_B { left: 266px; width: 168px; height: 94.5px; top: 41px; z-index: 1001; }
+        #thumbPC2_B { left: 266px; width: 168px; height: 94.5px; top: 140px; z-index: 1001; }
 
         /* Mobile (데이터: 33, 85, 191, 146) */
         #thumbMO1 { left: 33px; width: 191px; height: 107.5px; top: 85px; }
@@ -136,10 +138,9 @@
         #thumbMO3 { left: 33px; width: 191px; height: 107.5px; top: 377px; }
         #thumbMO4 { left: 33px; width: 191px; height: 107.5px; top: 523px; }
 
-        /* [NEW] Mobile 비교 썸네일 (B안) - 폰 밖으로 튀어나옴 */
-        /* 위치: 33(left) + 191(width) + 10(gap) = 234px */
-        #thumbMO1_B { left: 234px; width: 191px; height: 107.5px; top: 85px; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); border: 2px solid #FFF6B0; z-index: 2000; }
-        #thumbMO2_B { left: 234px; width: 191px; height: 107.5px; top: 231px; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); border: 2px solid #FFF6B0; z-index: 2000; }
+        /* [NEW] Mobile 비교 썸네일 (B안) - 선명하게, 테두리 제거 */
+        #thumbMO1_B { left: 234px; width: 191px; height: 107.5px; top: 85px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); }
+        #thumbMO2_B { left: 234px; width: 191px; height: 107.5px; top: 231px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); }
 
         .drag-text { position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; text-shadow: 2px 2px 0px #fff; cursor: grab; z-index: 3000; white-space: nowrap; padding: 6px 12px; border: 2px dashed transparent; border-radius: 10px; user-select: none; }
         .drag-text:hover { border-color: var(--light-blue); background: rgba(255,255,255,0.5); }

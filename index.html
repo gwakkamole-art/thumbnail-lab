@@ -7,7 +7,7 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Memory Fixed)</title>
+    <title>유튜브 썸네일 연구소 (Final Fixed)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- 1. Pretendard 웹폰트 --- */
@@ -87,7 +87,7 @@
         /* 작업 공간 (꽉 찬 캡처를 위해 여백 제거) */
         .workspace { flex: 1; background-color: rgba(255, 255, 255, 0.6); border-radius: 20px; border: 2px solid #fff; box-shadow: var(--card-shadow); display: flex; justify-content: center; align-items: center; padding: 0; overflow: auto; }
         
-        /* 캡처 대상 (display: inline-flex로 내용물 크기만큼만 잡히게) */
+        /* 캡처 대상 (inline-flex로 내용물 크기만큼만 잡히게) */
         #dualStage { position: relative; display: inline-flex; align-items: flex-end; justify-content: center; padding: 0; }
 
         /* 프레임 스타일 */
@@ -275,7 +275,7 @@
         <ul class="step-list">
             <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일 선택 or URL 입력. (URL은 자동 저장됨!)</span></li>
             <li><span class="step-title">비교 모드 🆚</span><span class="step-desc">스위치를 켜면 1,2번 우측에 <b>[B안]</b> 추가 가능.</span></li>
-            <li><span class="step-title">저장 📸</span><span class="step-desc">여백 없이 꽉 찬 이미지로 저장됩니다.</span></li>
+            <li><span class="step-title">저장 📸</span><span class="step-desc">B안이 있어도 잘리지 않고 저장됩니다.</span></li>
         </ul>
         <p class="creator-info">제작: <b>[뉴미디어 2팀]</b></p>
         <button class="btn-confirm" id="okGuide">확인</button>
@@ -300,25 +300,22 @@
             if(this.checked) el.classList.add('active');
             else el.classList.remove('active');
         });
-        // 상태 저장
         localStorage.setItem('comp_mode', this.checked);
     });
 
     // [중요] 초기 로드 및 기억된 데이터 복구
     window.addEventListener('DOMContentLoaded', () => {
-        // 1. 저장된 Youtube URL 복구 (2, 3, 4번)
+        // 1. 저장된 Youtube URL 복구
         for(let i=2; i<=4; i++) {
             const savedUrl = localStorage.getItem(`saved_url_${i}`);
             if(savedUrl) {
                 const input = document.getElementById(`urlInput${i}`);
                 if(input) {
                     input.value = savedUrl;
-                    loadFromUrl(i); // URL로 이미지 자동 로드
+                    loadFromUrl(i);
                 }
             }
         }
-        
-        // 2. 저장된 B안 Youtube URL 복구 (2_B번)
         const savedUrl2B = localStorage.getItem(`saved_url_2_B`);
         if(savedUrl2B) {
             const input2B = document.getElementById(`urlInput2_B`);
@@ -328,11 +325,10 @@
             }
         }
 
-        // 3. 비교 모드 토글 상태 복구
+        // 2. 비교 모드 토글 상태 복구
         const isCompMode = localStorage.getItem('comp_mode') === 'true';
         if(isCompMode) {
             compToggle.checked = true;
-            // 강제로 change 이벤트 발생시켜 UI 업데이트
             compToggle.dispatchEvent(new Event('change'));
         }
     });
@@ -350,7 +346,7 @@
         const urlInput = document.getElementById(`urlInput${num}`);
         if(urlInput) {
             urlInput.value = '';
-            localStorage.removeItem(`saved_url_${num}`); // 저장소에서 삭제
+            localStorage.removeItem(`saved_url_${num}`);
         }
         const fileInput = document.getElementById(`thumbInput${num}`);
         if(fileInput) fileInput.value = '';
@@ -368,7 +364,7 @@
         return (match && match[2].length === 11) ? match[2] : null;
     }
 
-    // URL 로드 함수 (저장 기능 포함)
+    // URL 로드 함수
     function loadFromUrl(num) {
         const urlInput = document.getElementById(`urlInput${num}`);
         if(!urlInput) return;
@@ -383,10 +379,8 @@
             if(pcImg) { pcImg.src = thumbUrl; pcImg.style.display = 'block'; }
             if(moImg) { moImg.src = thumbUrl; moImg.style.display = 'block'; }
             
-            // [저장] 유효한 URL이면 저장
             localStorage.setItem(`saved_url_${num}`, url);
         } else {
-            // 빈 값일 때는 경고 안 함 (초기화 시 에러 방지)
             if(url.trim() !== "") alert("올바른 유튜브 주소가 아닙니다!");
         }
     }
@@ -453,15 +447,17 @@
         document.removeEventListener('mouseup', onMouseUp);
     }
 
-    // [무적의 저장 기능] - 꽉 찬 캡처 & 에러 방지
+    // [무적의 저장 기능] - 꽉 찬 캡처 & 모바일 B안 잘림 방지
     document.getElementById('saveBtn').addEventListener('click', function() {
         const stage = document.getElementById('dualStage');
         const btn = this;
         const originalText = btn.innerText;
+        const isCompMode = document.querySelector('.comp-ui.active') !== null; // 비교모드 확인
 
         btn.innerText = "📸 변환 중...";
         btn.disabled = true;
 
+        // 에러 방지 (깨진 이미지 숨김)
         const allImages = stage.querySelectorAll('img');
         allImages.forEach(img => {
             if (!img.complete || img.naturalHeight === 0 || img.src === "") {
@@ -469,8 +465,17 @@
             }
         });
 
+        // 1. 캡처 방식 설정 (inline-flex로 내용물 크기만큼 캡처)
         const originalDisplay = stage.style.display;
-        stage.style.display = 'inline-flex'; // 꽉 찬 캡처의 핵심
+        stage.style.display = 'inline-flex';
+
+        // 2. [핵심] 비교 모드일 때만 오른쪽 공간을 강제로 늘림 (B안 썸네일 너비만큼)
+        const originalPaddingRight = stage.style.paddingRight;
+        if (isCompMode) {
+            stage.style.paddingRight = "185px"; // B안 썸네일(191px)의 튀어나온 부분 커버
+        } else {
+            stage.style.paddingRight = "0px";
+        }
 
         html2canvas(stage, { 
             backgroundColor: null, 
@@ -494,6 +499,7 @@
             btn.innerText = originalText;
             btn.disabled = false;
             stage.style.display = originalDisplay;
+            stage.style.paddingRight = originalPaddingRight; // 패딩 복구
         }
     });
 </script>

@@ -7,7 +7,7 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Final Version)</title>
+    <title>유튜브 썸네일 연구소 (Memory Fixed)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- 1. Pretendard 웹폰트 --- */
@@ -77,37 +77,34 @@
         .btn-blue { background: linear-gradient(135deg, var(--light-blue), var(--main-blue)); color: white; }
 
         /* 비교 모드 UI */
-        .comp-ui { display: none; } /* 애니메이션 제거를 위해 간단히 처리 */
-        .comp-ui.active { display: block; animation: none; } /* 저장 오류 방지 위해 애니메이션 제거 */
+        .comp-ui { display: none; } 
+        .comp-ui.active { display: block; animation: none; } 
 
         .sub-input-box { background: #FFFDE7; padding: 10px; border-radius: 8px; margin-top: 8px; border: 1px dashed #FBC02D; position: relative; }
         .sub-input-box::before { content: 'B안'; position: absolute; right: 10px; top: 10px; font-size: 10px; background: #FBC02D; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .sub-label { font-size: 0.8rem; color: #F57F17; font-weight: bold; margin-bottom: 5px; display: block; }
 
-        /* 작업 공간 */
-        .workspace { flex: 1; background-color: rgba(255, 255, 255, 0.6); border-radius: 20px; border: 2px solid #fff; box-shadow: var(--card-shadow); display: flex; justify-content: center; align-items: center; padding: 20px; overflow: auto; }
-        #dualStage { position: relative; display: flex; align-items: flex-end; justify-content: center; padding: 30px; min-width: 900px; min-height: 600px; }
+        /* 작업 공간 (꽉 찬 캡처를 위해 여백 제거) */
+        .workspace { flex: 1; background-color: rgba(255, 255, 255, 0.6); border-radius: 20px; border: 2px solid #fff; box-shadow: var(--card-shadow); display: flex; justify-content: center; align-items: center; padding: 0; overflow: auto; }
+        
+        /* 캡처 대상 (display: inline-flex로 내용물 크기만큼만 잡히게) */
+        #dualStage { position: relative; display: inline-flex; align-items: flex-end; justify-content: center; padding: 0; }
 
-        /* 프레임 */
-        .pc-wrapper { position: relative; z-index: 10; margin-right: -30px; }
+        /* 프레임 스타일 */
+        .pc-wrapper { position: relative; z-index: 10; margin-right: 0; }
         .pc-frame { background: #222; border-radius: 12px 12px 0 0; padding: 12px 12px 0 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border: 3px solid #333; border-bottom: none; }
         .pc-screen { width: 640px; height: 400px; background: #fff; position: relative; overflow: hidden; border-radius: 4px; }
         .pc-chin { height: 35px; background: #1a1a1a; border-radius: 0 0 12px 12px; display: flex; justify-content: center; align-items: center; }
         .pc-chin::after { content: ''; width: 5px; height: 5px; background: #fff; border-radius: 50%; opacity: 0.6; box-shadow: 0 0 4px #fff; }
         .pc-stand { width: 140px; height: 45px; background: linear-gradient(#333, #111); margin: 0 auto; border-radius: 0 0 10px 10px; }
 
-        /* 모바일 프레임 */
-        .phone-wrapper { position: relative; z-index: 20; margin-bottom: -5px; margin-left: -100px; }
+        /* 모바일 프레임 (PC와 살짝 겹치도록 마진 조정) */
+        .phone-wrapper { position: relative; z-index: 20; margin-bottom: 0; margin-left: -20px; }
         .phone-frame { background: #111; border-radius: 36px; padding: 10px; box-shadow: -15px 20px 40px rgba(0,0,0,0.5); border: 3px solid #444; }
         .phone-screen { width: 256px; height: 512px; background: #fff; border-radius: 28px; position: relative; overflow: visible !important; }
         .phone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 70px; height: 20px; background: #000; border-radius: 10px; z-index: 100; pointer-events: none; }
 
-        .bg-img { 
-            position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; 
-            object-fit: cover; object-position: top;
-            border-radius: 28px; 
-        }
-        
+        .bg-img { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; object-fit: cover; object-position: top; border-radius: 28px; }
         .fixed-thumb { position: absolute; z-index: 999; line-height: 0; pointer-events: none; } 
         .fixed-thumb img { width: 100%; height: 100%; border-radius: 4px; object-fit: cover; }
 
@@ -117,7 +114,7 @@
         #thumbPC3 { left: 88px; width: 168px; height: 94.5px; top: 239px; }
         #thumbPC4 { left: 88px; width: 168px; height: 94.5px; top: 338px; }
 
-        /* [PC 비교 썸네일 (B안)] - 완전 불투명, 테두리 제거 */
+        /* [PC B안] */
         #thumbPC1_B { left: 266px; width: 168px; height: 94.5px; top: 41px; z-index: 1001; opacity: 1 !important; animation: none !important; }
         #thumbPC2_B { left: 266px; width: 168px; height: 94.5px; top: 140px; z-index: 1001; opacity: 1 !important; animation: none !important; }
 
@@ -127,7 +124,7 @@
         #thumbMO3 { left: 33px; width: 191px; height: 107.5px; top: 377px; }
         #thumbMO4 { left: 33px; width: 191px; height: 107.5px; top: 523px; }
 
-        /* [Mobile 비교 썸네일 (B안)] - 완전 불투명, 테두리 제거 */
+        /* [Mobile B안] */
         #thumbMO1_B { left: 234px; width: 191px; height: 107.5px; top: 85px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); opacity: 1 !important; animation: none !important; }
         #thumbMO2_B { left: 234px; width: 191px; height: 107.5px; top: 231px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); opacity: 1 !important; animation: none !important; }
 
@@ -155,8 +152,8 @@
         <h2>🧪 유튜브 썸네일 연구소</h2>
         
         <div class="top-btn-group">
-            <button class="guide-btn" id="openGuide">📘 사용 방법 (처음이라면 필독!)</button>
-            <button class="reset-btn" id="resetAll" title="초기화 (저장된 URL 삭제)">🔄</button>
+            <button class="guide-btn" id="openGuide">📘 사용 방법</button>
+            <button class="reset-btn" id="resetAll" title="초기화">🔄</button>
         </div>
 
         <div class="toggle-wrapper">
@@ -276,9 +273,9 @@
         <span class="close-btn" id="closeGuide">&times;</span>
         <h3>📘 사용 설명서</h3>
         <ul class="step-list">
-            <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일 선택 or URL 입력.</span></li>
+            <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일 선택 or URL 입력. (URL은 자동 저장됨!)</span></li>
             <li><span class="step-title">비교 모드 🆚</span><span class="step-desc">스위치를 켜면 1,2번 우측에 <b>[B안]</b> 추가 가능.</span></li>
-            <li><span class="step-title">저장 📸</span><span class="step-desc">배경 이미지가 없어도 저장은 됩니다.</span></li>
+            <li><span class="step-title">저장 📸</span><span class="step-desc">여백 없이 꽉 찬 이미지로 저장됩니다.</span></li>
         </ul>
         <p class="creator-info">제작: <b>[뉴미디어 2팀]</b></p>
         <button class="btn-confirm" id="okGuide">확인</button>
@@ -295,7 +292,7 @@
     closeBtn.addEventListener('click', () => modal.style.display = 'none');
     okBtn.addEventListener('click', () => modal.style.display = 'none');
 
-    // 비교 모드 토글
+    // 비교 모드 토글 (설정 저장 포함)
     const compToggle = document.getElementById('compToggle');
     compToggle.addEventListener('change', function() {
         const uiElements = document.querySelectorAll('.comp-ui');
@@ -303,36 +300,46 @@
             if(this.checked) el.classList.add('active');
             else el.classList.remove('active');
         });
+        // 상태 저장
         localStorage.setItem('comp_mode', this.checked);
     });
 
-    // 초기 로드
+    // [중요] 초기 로드 및 기억된 데이터 복구
     window.addEventListener('DOMContentLoaded', () => {
-        // 기존 2,3,4번 로드
+        // 1. 저장된 Youtube URL 복구 (2, 3, 4번)
         for(let i=2; i<=4; i++) {
             const savedUrl = localStorage.getItem(`saved_url_${i}`);
             if(savedUrl) {
-                document.getElementById(`urlInput${i}`).value = savedUrl;
-                loadFromUrl(i);
+                const input = document.getElementById(`urlInput${i}`);
+                if(input) {
+                    input.value = savedUrl;
+                    loadFromUrl(i); // URL로 이미지 자동 로드
+                }
             }
         }
-        // B안(2_B) 로드
+        
+        // 2. 저장된 B안 Youtube URL 복구 (2_B번)
         const savedUrl2B = localStorage.getItem(`saved_url_2_B`);
         if(savedUrl2B) {
-            document.getElementById(`urlInput2_B`).value = savedUrl2B;
-            loadFromUrl('2_B');
+            const input2B = document.getElementById(`urlInput2_B`);
+            if(input2B) {
+                input2B.value = savedUrl2B;
+                loadFromUrl('2_B');
+            }
         }
-        // 비교 모드 상태 복구
+
+        // 3. 비교 모드 토글 상태 복구
         const isCompMode = localStorage.getItem('comp_mode') === 'true';
         if(isCompMode) {
             compToggle.checked = true;
+            // 강제로 change 이벤트 발생시켜 UI 업데이트
             compToggle.dispatchEvent(new Event('change'));
         }
     });
 
-    // 초기화
+    // 전체 초기화
     document.getElementById('resetAll').addEventListener('click', () => {
-        if(confirm('모든 데이터를 초기화하시겠습니까?')) {
+        if(confirm('모든 입력 내용과 저장된 데이터를 초기화하시겠습니까?')) {
             localStorage.clear();
             location.reload();
         }
@@ -343,7 +350,7 @@
         const urlInput = document.getElementById(`urlInput${num}`);
         if(urlInput) {
             urlInput.value = '';
-            localStorage.removeItem(`saved_url_${num}`);
+            localStorage.removeItem(`saved_url_${num}`); // 저장소에서 삭제
         }
         const fileInput = document.getElementById(`thumbInput${num}`);
         if(fileInput) fileInput.value = '';
@@ -354,15 +361,18 @@
         if(moImg) { moImg.src = ''; moImg.style.display = 'none'; }
     }
 
-    // URL 로드
+    // 유튜브 ID 추출
     function getYoutubeId(url) {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
         return (match && match[2].length === 11) ? match[2] : null;
     }
 
+    // URL 로드 함수 (저장 기능 포함)
     function loadFromUrl(num) {
         const urlInput = document.getElementById(`urlInput${num}`);
+        if(!urlInput) return;
+        
         const url = urlInput.value;
         const videoId = getYoutubeId(url);
         
@@ -372,13 +382,16 @@
             const moImg = document.getElementById(`imgMO${num}`);
             if(pcImg) { pcImg.src = thumbUrl; pcImg.style.display = 'block'; }
             if(moImg) { moImg.src = thumbUrl; moImg.style.display = 'block'; }
+            
+            // [저장] 유효한 URL이면 저장
             localStorage.setItem(`saved_url_${num}`, url);
         } else {
+            // 빈 값일 때는 경고 안 함 (초기화 시 에러 방지)
             if(url.trim() !== "") alert("올바른 유튜브 주소가 아닙니다!");
         }
     }
 
-    // 파일 로드
+    // 파일 로드 설정
     function setupThumbLoader(inputId, pcImgId, moImgId) {
         const input = document.getElementById(inputId);
         if(!input) return;
@@ -416,7 +429,7 @@
         document.getElementById('dualStage').appendChild(textEl);
     });
 
-    // 드래그
+    // 드래그 기능
     let activeDrag = null;
     let startX, startY, initLeft, initTop;
     document.addEventListener('mousedown', function(e) {
@@ -440,7 +453,7 @@
         document.removeEventListener('mouseup', onMouseUp);
     }
 
-    // [무적의 저장 기능]
+    // [무적의 저장 기능] - 꽉 찬 캡처 & 에러 방지
     document.getElementById('saveBtn').addEventListener('click', function() {
         const stage = document.getElementById('dualStage');
         const btn = this;
@@ -449,7 +462,6 @@
         btn.innerText = "📸 변환 중...";
         btn.disabled = true;
 
-        // 에러 방지를 위해 깨진 이미지 숨김 처리
         const allImages = stage.querySelectorAll('img');
         allImages.forEach(img => {
             if (!img.complete || img.naturalHeight === 0 || img.src === "") {
@@ -457,11 +469,8 @@
             }
         });
 
-        // B안 썸네일 잘림 방지 여백 확보 (100px -> 300px로 수정)
-        const originalWidth = stage.style.width;
-        const originalPadding = stage.style.paddingRight;
-        stage.style.width = "1600px";
-        stage.style.paddingRight = "300px"; // 여기가 핵심!
+        const originalDisplay = stage.style.display;
+        stage.style.display = 'inline-flex'; // 꽉 찬 캡처의 핵심
 
         html2canvas(stage, { 
             backgroundColor: null, 
@@ -484,8 +493,7 @@
         function restore() {
             btn.innerText = originalText;
             btn.disabled = false;
-            stage.style.width = originalWidth;
-            stage.style.paddingRight = originalPadding;
+            stage.style.display = originalDisplay;
         }
     });
 </script>

@@ -7,7 +7,7 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Memory + Comparison)</title>
+    <title>유튜브 썸네일 연구소 (Final Version)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- 1. Pretendard 웹폰트 --- */
@@ -38,7 +38,7 @@
         .reset-btn { width: 40px; padding: 10px; background: #fff; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
         .reset-btn:hover { background: #f0f0f0; border-color: #bbb; }
 
-        /* [NEW] 비교 모드 토글 스타일 */
+        /* 비교 모드 토글 스타일 */
         .toggle-wrapper { display: flex; align-items: center; justify-content: space-between; background: #FFF9C4; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #FBC02D; }
         .toggle-label { font-weight: bold; color: #F57F17; font-size: 0.9rem; display: flex; align-items: center; gap:5px; }
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
@@ -75,12 +75,10 @@
         .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn:hover { transform: translateY(-2px); }
         .btn-blue { background: linear-gradient(135deg, var(--light-blue), var(--main-blue)); color: white; }
-        .btn-danger { background: linear-gradient(135deg, #FF6B6B, #FF3B3B); color: white; }
 
-        /* [NEW] 비교 모드 관련 UI */
-        .comp-ui { display: none; animation: fadeIn 0.3s ease-out; }
-        .comp-ui.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        /* 비교 모드 UI */
+        .comp-ui { display: none; } /* 애니메이션 제거를 위해 간단히 처리 */
+        .comp-ui.active { display: block; animation: none; } /* 저장 오류 방지 위해 애니메이션 제거 */
 
         .sub-input-box { background: #FFFDE7; padding: 10px; border-radius: 8px; margin-top: 8px; border: 1px dashed #FBC02D; position: relative; }
         .sub-input-box::before { content: 'B안'; position: absolute; right: 10px; top: 10px; font-size: 10px; background: #FBC02D; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
@@ -101,52 +99,41 @@
         /* 모바일 프레임 */
         .phone-wrapper { position: relative; z-index: 20; margin-bottom: -5px; margin-left: -100px; }
         .phone-frame { background: #111; border-radius: 36px; padding: 10px; box-shadow: -15px 20px 40px rgba(0,0,0,0.5); border: 3px solid #444; }
-        /* [중요] 비교 썸네일이 폰 밖으로 나가야 하므로 overflow visible */
         .phone-screen { width: 256px; height: 512px; background: #fff; border-radius: 28px; position: relative; overflow: visible !important; }
         .phone-notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 70px; height: 20px; background: #000; border-radius: 10px; z-index: 100; pointer-events: none; }
 
         .bg-img { 
             position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; 
             object-fit: cover; object-position: top;
-            /* 배경 이미지는 밖으로 나가지 않도록 clip 처리 (폰 스크린 radius 안쪽) */
             border-radius: 28px; 
         }
         
-        /* 썸네일 고정 위치 */
         .fixed-thumb { position: absolute; z-index: 999; line-height: 0; pointer-events: none; } 
         .fixed-thumb img { width: 100%; height: 100%; border-radius: 4px; object-fit: cover; }
 
-        /* PC (데이터: 88, 41, 168, 99) */
+        /* PC 기본 썸네일 */
         #thumbPC1 { left: 88px; width: 168px; height: 94.5px; top: 41px; }
         #thumbPC2 { left: 88px; width: 168px; height: 94.5px; top: 140px; }
         #thumbPC3 { left: 88px; width: 168px; height: 94.5px; top: 239px; }
         #thumbPC4 { left: 88px; width: 168px; height: 94.5px; top: 338px; }
 
-    /* PC (데이터: 88, 41, 168, 99) */
-        #thumbPC1 { left: 88px; width: 168px; height: 94.5px; top: 41px; }
-        #thumbPC2 { left: 88px; width: 168px; height: 94.5px; top: 140px; }
-        #thumbPC3 { left: 88px; width: 168px; height: 94.5px; top: 239px; }
-        #thumbPC4 { left: 88px; width: 168px; height: 94.5px; top: 338px; }
+        /* [PC 비교 썸네일 (B안)] - 완전 불투명, 테두리 제거 */
+        #thumbPC1_B { left: 266px; width: 168px; height: 94.5px; top: 41px; z-index: 1001; opacity: 1 !important; animation: none !important; }
+        #thumbPC2_B { left: 266px; width: 168px; height: 94.5px; top: 140px; z-index: 1001; opacity: 1 !important; animation: none !important; }
 
-        /* [NEW] PC 비교 썸네일 (B안) - 선명하게, 테두리 제거 */
-        #thumbPC1_B { left: 266px; width: 168px; height: 94.5px; top: 41px; z-index: 1001; }
-        #thumbPC2_B { left: 266px; width: 168px; height: 94.5px; top: 140px; z-index: 1001; }
-
-        /* Mobile (데이터: 33, 85, 191, 146) */
+        /* Mobile 기본 썸네일 */
         #thumbMO1 { left: 33px; width: 191px; height: 107.5px; top: 85px; }
         #thumbMO2 { left: 33px; width: 191px; height: 107.5px; top: 231px; }
         #thumbMO3 { left: 33px; width: 191px; height: 107.5px; top: 377px; }
         #thumbMO4 { left: 33px; width: 191px; height: 107.5px; top: 523px; }
 
-        /* [NEW] Mobile 비교 썸네일 (B안) - 선명하게, 테두리 제거 */
-        #thumbMO1_B { left: 234px; width: 191px; height: 107.5px; top: 85px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); }
-        #thumbMO2_B { left: 234px; width: 191px; height: 107.5px; top: 231px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); }
+        /* [Mobile 비교 썸네일 (B안)] - 완전 불투명, 테두리 제거 */
+        #thumbMO1_B { left: 234px; width: 191px; height: 107.5px; top: 85px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); opacity: 1 !important; animation: none !important; }
+        #thumbMO2_B { left: 234px; width: 191px; height: 107.5px; top: 231px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); opacity: 1 !important; animation: none !important; }
 
         .drag-text { position: absolute; font-size: 24px; font-weight: bold; color: #FF3B3B; text-shadow: 2px 2px 0px #fff; cursor: grab; z-index: 3000; white-space: nowrap; padding: 6px 12px; border: 2px dashed transparent; border-radius: 10px; user-select: none; }
         .drag-text:hover { border-color: var(--light-blue); background: rgba(255,255,255,0.5); }
         .drag-text:focus { cursor: text; border-color: var(--main-blue); background: #fff; outline: none; user-select: text; }
-
-        .editing .drag-text { border: 2px dashed var(--main-blue); }
 
         /* 팝업 */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 9999; justify-content: center; align-items: center; }
@@ -186,9 +173,7 @@
             <label>1번 위치 (맨 위)</label>
             <div class="url-input-group">
                 <input type="file" id="thumbInput1" accept="image/*">
-                <button class="trash-btn" onclick="clearThumb(1)" title="삭제">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
+                <button class="trash-btn" onclick="clearThumb(1)" title="삭제">🗑️</button>
             </div>
             <div class="comp-ui sub-input-box">
                 <span class="sub-label">1번 위치 [B안] 추가</span>
@@ -201,9 +186,7 @@
             <div class="url-input-group">
                 <input type="text" id="urlInput2" placeholder="URL 입력">
                 <button class="url-btn" onclick="loadFromUrl(2)">가져오기</button>
-                <button class="trash-btn" onclick="clearThumb(2)" title="삭제">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
+                <button class="trash-btn" onclick="clearThumb(2)" title="삭제">🗑️</button>
             </div>
             <input type="file" id="thumbInput2" accept="image/*">
             <div class="comp-ui sub-input-box">
@@ -222,9 +205,7 @@
             <div class="url-input-group">
                 <input type="text" id="urlInput3" placeholder="URL 입력">
                 <button class="url-btn" onclick="loadFromUrl(3)">가져오기</button>
-                <button class="trash-btn" onclick="clearThumb(3)" title="삭제">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
+                <button class="trash-btn" onclick="clearThumb(3)" title="삭제">🗑️</button>
             </div>
             <input type="file" id="thumbInput3" accept="image/*">
             
@@ -234,9 +215,7 @@
             <div class="url-input-group">
                 <input type="text" id="urlInput4" placeholder="URL 입력">
                 <button class="url-btn" onclick="loadFromUrl(4)">가져오기</button>
-                <button class="trash-btn" onclick="clearThumb(4)" title="삭제">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
+                <button class="trash-btn" onclick="clearThumb(4)" title="삭제">🗑️</button>
             </div>
             <input type="file" id="thumbInput4" accept="image/*">
         </div>
@@ -297,12 +276,11 @@
         <span class="close-btn" id="closeGuide">&times;</span>
         <h3>📘 사용 설명서</h3>
         <ul class="step-list">
-            <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일을 선택하거나 유튜브 URL을 넣으면 정해진 위치에 자동으로 들어갑니다.</span></li>
-            <li><span class="step-title">비교 모드 🆚</span><span class="step-desc">왼쪽 상단 '비교 모드' 스위치를 켜면 1, 2번 위치 오른쪽에 <b>[B안]</b>을 추가해 비교할 수 있습니다.</span></li>
-            <li><span class="step-title">자동 저장 🧠</span><span class="step-desc">입력한 URL은 자동으로 기억되어, 나중에 다시 접속해도 그대로 남아있습니다.</span></li>
-            <li><span class="step-title">저장하기 📸</span><span class="step-desc">버튼만 누르면 고화질로 저장 완료!</span></li>
+            <li><span class="step-title">썸네일 넣기 ✨</span><span class="step-desc">파일 선택 or URL 입력.</span></li>
+            <li><span class="step-title">비교 모드 🆚</span><span class="step-desc">스위치를 켜면 1,2번 우측에 <b>[B안]</b> 추가 가능.</span></li>
+            <li><span class="step-title">저장 📸</span><span class="step-desc">배경 이미지가 없어도 저장은 됩니다.</span></li>
         </ul>
-        <p class="creator-info">문의: 사이트 제작자 <b>[뉴미디어 2팀]</b> 🙇‍♀️</p>
+        <p class="creator-info">제작: <b>[뉴미디어 2팀]</b></p>
         <button class="btn-confirm" id="okGuide">확인</button>
     </div>
 </div>
@@ -317,7 +295,7 @@
     closeBtn.addEventListener('click', () => modal.style.display = 'none');
     okBtn.addEventListener('click', () => modal.style.display = 'none');
 
-    // [NEW] 비교 모드 토글
+    // 비교 모드 토글
     const compToggle = document.getElementById('compToggle');
     compToggle.addEventListener('change', function() {
         const uiElements = document.querySelectorAll('.comp-ui');
@@ -328,7 +306,7 @@
         localStorage.setItem('comp_mode', this.checked);
     });
 
-    // [기억 기능] 초기 로드
+    // 초기 로드
     window.addEventListener('DOMContentLoaded', () => {
         // 기존 2,3,4번 로드
         for(let i=2; i<=4; i++) {
@@ -338,14 +316,13 @@
                 loadFromUrl(i);
             }
         }
-        // [NEW] B안(2_B) 로드
+        // B안(2_B) 로드
         const savedUrl2B = localStorage.getItem(`saved_url_2_B`);
         if(savedUrl2B) {
             document.getElementById(`urlInput2_B`).value = savedUrl2B;
             loadFromUrl('2_B');
         }
-
-        // [NEW] 비교 모드 상태 복구
+        // 비교 모드 상태 복구
         const isCompMode = localStorage.getItem('comp_mode') === 'true';
         if(isCompMode) {
             compToggle.checked = true;
@@ -353,15 +330,15 @@
         }
     });
 
-    // [기억 기능] 전체 초기화
+    // 초기화
     document.getElementById('resetAll').addEventListener('click', () => {
-        if(confirm('모든 입력 내용과 저장된 URL을 초기화하시겠습니까?')) {
+        if(confirm('모든 데이터를 초기화하시겠습니까?')) {
             localStorage.clear();
             location.reload();
         }
     });
 
-    // 개별 삭제 (저장된 URL도 삭제)
+    // 개별 삭제
     function clearThumb(num) {
         const urlInput = document.getElementById(`urlInput${num}`);
         if(urlInput) {
@@ -377,7 +354,7 @@
         if(moImg) { moImg.src = ''; moImg.style.display = 'none'; }
     }
 
-    // URL 로드 (저장 기능 추가)
+    // URL 로드
     function getYoutubeId(url) {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
@@ -385,7 +362,6 @@
     }
 
     function loadFromUrl(num) {
-        // num은 숫자(2,3,4) 또는 문자열('2_B')일 수 있음
         const urlInput = document.getElementById(`urlInput${num}`);
         const url = urlInput.value;
         const videoId = getYoutubeId(url);
@@ -394,11 +370,8 @@
             const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
             const pcImg = document.getElementById(`imgPC${num}`);
             const moImg = document.getElementById(`imgMO${num}`);
-            
             if(pcImg) { pcImg.src = thumbUrl; pcImg.style.display = 'block'; }
             if(moImg) { moImg.src = thumbUrl; moImg.style.display = 'block'; }
-            
-            // [기억 기능] URL 저장
             localStorage.setItem(`saved_url_${num}`, url);
         } else {
             if(url.trim() !== "") alert("올바른 유튜브 주소가 아닙니다!");
@@ -409,7 +382,6 @@
     function setupThumbLoader(inputId, pcImgId, moImgId) {
         const input = document.getElementById(inputId);
         if(!input) return;
-        
         input.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if(file) {
@@ -425,13 +397,10 @@
         });
     }
 
-    // 로더 연결
     setupThumbLoader('thumbInput1', 'imgPC1', 'imgMO1');
     setupThumbLoader('thumbInput2', 'imgPC2', 'imgMO2');
     setupThumbLoader('thumbInput3', 'imgPC3', 'imgMO3');
     setupThumbLoader('thumbInput4', 'imgPC4', 'imgMO4');
-    
-    // [NEW] B안 로더 연결
     setupThumbLoader('thumbInput1_B', 'imgPC1_B', 'imgMO1_B');
     setupThumbLoader('thumbInput2_B', 'imgPC2_B', 'imgMO2_B');
 
@@ -471,73 +440,56 @@
         document.removeEventListener('mouseup', onMouseUp);
     }
 
-// [무적의 저장 기능] 
-    // 에러 원인(배경이미지 등)을 자동으로 숨기고 찰칵 찍습니다.
+    // [무적의 저장 기능]
     document.getElementById('saveBtn').addEventListener('click', function() {
         const stage = document.getElementById('dualStage');
         const btn = this;
         const originalText = btn.innerText;
 
-        // 1. 버튼 상태 변경
         btn.innerText = "📸 변환 중...";
         btn.disabled = true;
 
-        // 2. [중요] 캡처 전처리: 깨진 이미지나 소스 없는 이미지 숨기기
-        // (이게 없으면 html2canvas가 멈춥니다)
+        // 에러 방지를 위해 깨진 이미지 숨김 처리
         const allImages = stage.querySelectorAll('img');
         const hiddenImages = [];
         allImages.forEach(img => {
-            // 이미지가 로드되지 않았거나, src가 비어있으면 잠시 숨김
             if (!img.complete || img.naturalHeight === 0 || img.src === "") {
                 if (img.style.display !== 'none') {
-                    img.style.display = 'none'; // 숨기기
-                    hiddenImages.push(img);     // 나중에 복구하려고 기록
+                    img.style.display = 'none';
+                    hiddenImages.push(img);
                 }
             }
         });
 
-        // 3. 비교 모드(B안)가 잘리지 않도록 임시로 여백 확보
+        // B안 썸네일 잘림 방지 여백 확보
         const originalWidth = stage.style.width;
         const originalPadding = stage.style.paddingRight;
-        stage.style.width = "1600px"; // 넉넉하게 넓힘
+        stage.style.width = "1600px";
         stage.style.paddingRight = "100px";
 
-        // 4. 화면 캡처 시작
         html2canvas(stage, { 
             backgroundColor: null, 
-            scale: 2,           // 고화질
-            useCORS: true,      // 보안 설정 1
-            allowTaint: true,   // 보안 설정 2 (로컬 파일 허용)
-            ignoreElements: (element) => {
-                // 혹시라도 'display: none' 인데 캡처하려는 거 방지
-                return element.style.display === 'none'; 
-            }
+            scale: 2, 
+            useCORS: true, 
+            allowTaint: true,
+            ignoreElements: (element) => element.style.display === 'none'
         }).then(canvas => {
-            // 성공! 다운로드
             const link = document.createElement('a');
-            link.download = 'thumbnail_lab_result.png';
+            link.download = 'thumbnail_lab_final.png';
             link.href = canvas.toDataURL("image/png");
             link.click();
-            
-            restore(); // 원상복구
+            restore();
         }).catch(err => {
-            // 실패 시
             console.error(err);
-            alert("⚠️ 저장 실패!\n\n크롬 브라우저 보안 정책 때문에 '배경 이미지 파일'이 막혔을 수 있습니다.\n배경 이미지를 빼고 썸네일만 나오게 찍거나, 파일을 서버에 올려야 합니다.");
+            alert("⚠️ 저장 실패! (보안 문제일 수 있습니다)");
             restore();
         });
 
-        // 5. 뒷정리 (원상복구 함수)
         function restore() {
             btn.innerText = originalText;
             btn.disabled = false;
-            
-            // 스타일 복구
             stage.style.width = originalWidth;
             stage.style.paddingRight = originalPadding;
-
-            // 숨겼던 이미지 다시 표시 (선택사항: 깨진 건 계속 숨겨두는 게 나을 수도 있음)
-            // hiddenImages.forEach(img => img.style.display = 'block'); 
         }
     });
 </script>

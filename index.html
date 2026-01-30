@@ -451,21 +451,17 @@
 
         // 에러 방지를 위해 깨진 이미지 숨김 처리
         const allImages = stage.querySelectorAll('img');
-        const hiddenImages = [];
         allImages.forEach(img => {
             if (!img.complete || img.naturalHeight === 0 || img.src === "") {
-                if (img.style.display !== 'none') {
-                    img.style.display = 'none';
-                    hiddenImages.push(img);
-                }
+                if (img.style.display !== 'none') img.style.display = 'none';
             }
         });
 
-        // B안 썸네일 잘림 방지 여백 확보
+        // B안 썸네일 잘림 방지 여백 확보 (100px -> 300px로 수정)
         const originalWidth = stage.style.width;
         const originalPadding = stage.style.paddingRight;
         stage.style.width = "1600px";
-        stage.style.paddingRight = "100px";
+        stage.style.paddingRight = "300px"; // 여기가 핵심!
 
         html2canvas(stage, { 
             backgroundColor: null, 

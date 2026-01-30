@@ -7,7 +7,7 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Memory Complete)</title>
+    <title>유튜브 썸네일 연구소 (Final Fixed v2)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- 1. Pretendard 웹폰트 --- */
@@ -172,7 +172,10 @@
             </div>
             <div class="comp-ui sub-input-box">
                 <span class="sub-label">1번 위치 [B안] 추가</span>
-                <input type="file" id="thumbInput1_B" accept="image/*">
+                <div class="url-input-group">
+                    <input type="file" id="thumbInput1_B" accept="image/*">
+                    <button class="trash-btn" onclick="clearThumb('1_B')" title="삭제">🗑️</button>
+                </div>
             </div>
             
             <hr style="margin:8px 0; border:0; border-top:1px dashed #D0E2FF;">

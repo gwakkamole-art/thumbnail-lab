@@ -7,7 +7,7 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
     
-    <title>유튜브 썸네일 연구소 (Final Fixed v2)</title>
+    <title>유튜브 썸네일 연구소 (Final Complete)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* --- 1. Pretendard 웹폰트 --- */
@@ -30,13 +30,13 @@
         .control-panel h2 { font-size: 1.3rem; margin-top: 0; color: var(--main-blue); letter-spacing: -0.5px; font-weight: 800; display: inline-block; margin-bottom: 10px; background: linear-gradient(to top, var(--point-yellow) 40%, transparent 40%); }
         
         /* 상단 버튼 그룹 */
-        .top-btn-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        .top-btn-group { display: flex; gap: 8px; margin-bottom: 10px; }
         .guide-btn { flex: 1; padding: 10px; background: #E8F0FE; color: var(--main-blue); border: 1px dashed var(--main-blue); border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; font-size: 0.9rem; }
         .guide-btn:hover { background: var(--main-blue); color: white; border-style: solid; }
         
-        /* 초기화 버튼 */
-        .reset-btn { width: 40px; padding: 10px; background: #fff; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
-        .reset-btn:hover { background: #f0f0f0; border-color: #bbb; }
+        /* [NEW] 전체 삭제 버튼 스타일 */
+        .btn-danger { flex: 0.8; padding: 10px; background: linear-gradient(135deg, #FF6B6B, #FF4757); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(255, 71, 87, 0.3); }
+        .btn-danger:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(255, 71, 87, 0.4); }
 
         /* 비교 모드 토글 스타일 */
         .toggle-wrapper { display: flex; align-items: center; justify-content: space-between; background: #FFF9C4; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #FBC02D; }
@@ -151,7 +151,7 @@
         
         <div class="top-btn-group">
             <button class="guide-btn" id="openGuide">📘 사용 방법</button>
-            <button class="reset-btn" id="resetAll" title="초기화">🔄</button>
+            <button class="btn-danger" id="clearAllBtn" title="모든 입력 및 저장된 데이터 삭제">🗑️ 전체 삭제</button>
         </div>
 
         <div class="toggle-wrapper">
@@ -351,11 +351,24 @@
         }
     });
 
-    // 전체 초기화
-    document.getElementById('resetAll').addEventListener('click', () => {
-        if(confirm('모든 입력 내용과 저장된 데이터를 초기화하시겠습니까?')) {
+    // [NEW] 전체 삭제 (Reset)
+    document.getElementById('clearAllBtn').addEventListener('click', () => {
+        if(confirm('모든 썸네일과 텍스트를 삭제하시겠습니까?\n(저장된 데이터도 함께 삭제됩니다)')) {
+            // 1. 썸네일 및 입력창 초기화
+            clearThumb(1); clearThumb(2); clearThumb(3); clearThumb(4);
+            clearThumb('1_B'); clearThumb('2_B');
+            
+            // 2. 텍스트 요소 삭제
+            document.querySelectorAll('.drag-text').forEach(el => el.remove());
+
+            // 3. 로컬 스토리지 전체 클리어 (비교모드 설정 등은 유지하고 싶으면 개별 삭제해야 함)
             localStorage.clear();
-            location.reload();
+
+            // 4. 비교 모드 꺼두기 (선택사항)
+            if(compToggle.checked) {
+                compToggle.checked = false;
+                compToggle.dispatchEvent(new Event('change'));
+            }
         }
     });
 

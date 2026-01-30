@@ -122,10 +122,13 @@
         #thumbPC3 { left: 88px; width: 168px; height: 94.5px; top: 239px; }
         #thumbPC4 { left: 88px; width: 168px; height: 94.5px; top: 338px; }
 
-        /* [NEW] PC 비교 썸네일 (B안) */
-        /* 위치: 88(left) + 168(width) + 10(gap) = 266px */
-        #thumbPC1_B { left: 266px; width: 168px; height: 94.5px; top: 41px; box-shadow: 0 0 0 2px #FFD54F; }
-        #thumbPC2_B { left: 266px; width: 168px; height: 94.5px; top: 140px; box-shadow: 0 0 0 2px #FFD54F; }
+    /* PC B안 썸네일 스타일 (선명하게, 테두리로 강조) */
+        #thumbPC1_B { left: 266px; width: 168px; height: 94.5px; top: 41px; box-shadow: 0 0 0 3px #FFD54F; z-index: 1001; }
+        #thumbPC2_B { left: 266px; width: 168px; height: 94.5px; top: 140px; box-shadow: 0 0 0 3px #FFD54F; z-index: 1001; }
+        
+        /* (참고) 모바일 쪽도 혹시 모르니 z-index 확실히 추가 */
+        #thumbMO1_B { left: 234px; width: 191px; height: 107.5px; top: 85px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); border: 3px solid #FFF6B0; }
+        #thumbMO2_B { left: 234px; width: 191px; height: 107.5px; top: 231px; z-index: 2000; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); border: 3px solid #FFF6B0; }
 
         /* Mobile (데이터: 33, 85, 191, 146) */
         #thumbMO1 { left: 33px; width: 191px; height: 107.5px; top: 85px; }
